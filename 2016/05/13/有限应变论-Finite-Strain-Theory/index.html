@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>有限应变论(Finite Strain Theory) - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">有限应变论(Finite Strain Theory)</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-05-13</span>
+  </div>
+  <div class="post-content">
+    <p>翻译自维基百科：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Finite_strain_theory#Deformation_gradient_tensor">Finite strain theory</a></p>
+<hr>
+<p>连续介质力学里，<strong>有限应变论</strong>处理任意大小的旋转和应变。有限应变论也称为<strong>大应变理论</strong>(<code>large strain theory</code>)，<strong>大变形理论</strong>(<code>large deformation theory</code>).比如：使得<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Infinitesimal_strain_theory">无限应变理论</a>中的假设变得无效。在这种情况下，连续介质变形状态和未变形状态之间有着巨大的差别，也使得这两种理论区别开来。</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="1-位移"><a href="#1-位移" class="headerlink" title="1. 位移"></a>1. 位移</h1><p>一个物体的变形包含两部分：<strong>刚体位移</strong>和<strong>变形</strong>。</p>
+<ul>
+<li>刚体位移(rigid-body displacement)包含 平移和旋转，但物体的形状不会改变。</li>
+<li>变形(deformation)的意思就是物体从初始状态(undeformed configuration)到当前状态(current configuration)形状/大小发生了变化,如图1。<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Displacement_of_a_continuum.svg/400px-Displacement_of_a_continuum.svg.png" alt="图 1. 连续体的运动"><br>一个连续体状态的变化可以称为<strong>位移场</strong>。一个位移场就是物体所有质点的位移向量形成的向量场，它将物体的变形状态(deformed configuration)(也就是当前状态)和未变形状态(undeformed configuration)联系起来。只有且仅有物体发生变形（deformation）时，物体的质点之间会发生相对位移。如果没有发生相对位移的位移，那么物体就是刚体位移。</li>
+</ul>
+<hr>
+<h2 id="材料坐标系-拉格朗日表述法"><a href="#材料坐标系-拉格朗日表述法" class="headerlink" title="材料坐标系(拉格朗日表述法)"></a>材料坐标系(拉格朗日表述法)</h2><h2 id="空间坐标系-欧拉表述法"><a href="#空间坐标系-欧拉表述法" class="headerlink" title="空间坐标系(欧拉表述法)"></a>空间坐标系(欧拉表述法)</h2><h2 id="材料和空间两种坐标系之间的关系"><a href="#材料和空间两种坐标系之间的关系" class="headerlink" title="材料和空间两种坐标系之间的关系"></a>材料和空间两种坐标系之间的关系</h2><h2 id="将物体-变形和未变形状态-与坐标系结合起来"><a href="#将物体-变形和未变形状态-与坐标系结合起来" class="headerlink" title="将物体(变形和未变形状态)与坐标系结合起来"></a>将物体(变形和未变形状态)与坐标系结合起来</h2><h1 id="2-变形梯度张量"><a href="#2-变形梯度张量" class="headerlink" title="2. 变形梯度张量"></a>2. 变形梯度张量</h1><h2 id="相对位移向量"><a href="#相对位移向量" class="headerlink" title="相对位移向量"></a>相对位移向量</h2><h3 id="泰勒近似"><a href="#泰勒近似" class="headerlink" title="泰勒近似"></a>泰勒近似</h3><h2 id="时变变形梯度"><a href="#时变变形梯度" class="headerlink" title="时变变形梯度"></a>时变变形梯度</h2><h1 id="3-表面和体积单元的变换"><a href="#3-表面和体积单元的变换" class="headerlink" title="3. 表面和体积单元的变换"></a>3. 表面和体积单元的变换</h1><h1 id="4-变形梯度张量的极分解"><a href="#4-变形梯度张量的极分解" class="headerlink" title="4. 变形梯度张量的极分解"></a>4. 变形梯度张量的极分解</h1><h1 id="5-变形张量"><a href="#5-变形张量" class="headerlink" title="5. 变形张量"></a>5. 变形张量</h1><h2 id="Right-Cauchy-Green-变形张量"><a href="#Right-Cauchy-Green-变形张量" class="headerlink" title="Right Cauchy-Green 变形张量"></a>Right Cauchy-Green 变形张量</h2><h2 id="Finger变形张量"><a href="#Finger变形张量" class="headerlink" title="Finger变形张量"></a>Finger变形张量</h2><h2 id="Left-Cauchy-Green-变形张量"><a href="#Left-Cauchy-Green-变形张量" class="headerlink" title="Left Cauchy-Green 变形张量"></a>Left Cauchy-Green 变形张量</h2><h2 id="Cauthy变形张量"><a href="#Cauthy变形张量" class="headerlink" title="Cauthy变形张量"></a>Cauthy变形张量</h2><h2 id="Spectral-表示"><a href="#Spectral-表示" class="headerlink" title="Spectral 表示"></a>Spectral 表示</h2><h2 id="对拉伸的求导"><a href="#对拉伸的求导" class="headerlink" title="对拉伸的求导"></a>对拉伸的求导</h2><h2 id="对变形张量的物理解释"><a href="#对变形张量的物理解释" class="headerlink" title="对变形张量的物理解释"></a>对变形张量的物理解释</h2><h2 id="6-有限应变张量"><a href="#6-有限应变张量" class="headerlink" title="6. 有限应变张量"></a>6. 有限应变张量</h2><h2 id="一般变形张量的Seth-Hill-族"><a href="#一般变形张量的Seth-Hill-族" class="headerlink" title="一般变形张量的Seth-Hill 族"></a>一般变形张量的Seth-Hill 族</h2><h1 id="7-拉伸率"><a href="#7-拉伸率" class="headerlink" title="7. 拉伸率"></a>7. 拉伸率</h1><h1 id="8-有限应变张量的物理解释"><a href="#8-有限应变张量的物理解释" class="headerlink" title="8. 有限应变张量的物理解释"></a>8. 有限应变张量的物理解释</h1><h1 id="9-曲线坐标系的变形张量"><a href="#9-曲线坐标系的变形张量" class="headerlink" title="9. 曲线坐标系的变形张量"></a>9. 曲线坐标系的变形张量</h1><h1 id="10-兼容性条件"><a href="#10-兼容性条件" class="headerlink" title="10. 兼容性条件"></a>10. 兼容性条件</h1><h2 id="变形梯度兼容"><a href="#变形梯度兼容" class="headerlink" title="变形梯度兼容"></a>变形梯度兼容</h2><h2 id="Right-Cauthy-Green-变形张量兼容"><a href="#Right-Cauthy-Green-变形张量兼容" class="headerlink" title="Right Cauthy-Green 变形张量兼容"></a>Right Cauthy-Green 变形张量兼容</h2><h2 id="Left-Cauthy-Green变形张量兼容"><a href="#Left-Cauthy-Green变形张量兼容" class="headerlink" title="Left Cauthy-Green变形张量兼容"></a>Left Cauthy-Green变形张量兼容</h2><h1 id="See-Also"><a href="#See-Also" class="headerlink" title="See Also"></a>See Also</h1><h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><h1 id="Further-Reading"><a href="#Further-Reading" class="headerlink" title="Further Reading"></a>Further Reading</h1><h1 id="External-links"><a href="#External-links" class="headerlink" title="External links"></a>External links</h1>
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%89%A9%E7%90%86/" rel="tag">物理</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

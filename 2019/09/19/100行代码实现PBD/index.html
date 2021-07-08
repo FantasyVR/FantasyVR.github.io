@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>100行代码实现PBD - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理仿真>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">100行代码实现PBD</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2019-09-19</span>
+  </div>
+  <div class="post-content">
+    <p>本文使用<code>matlab</code>实现了一个简单的PBD场景：双摆系统，代码（加上注释）不超过100行。</p>
+<span id="more"></span>
+<p>物理仿真我一般都是用C++写的，但是一个简单的场景，再加上OpenGL渲染，就要不少代码。但是物理上，有些我们关注的就是一些核心的求解步骤。今天我试着用最简单的方式来说明<code>PBD</code>的基本原理和步骤，我不想关注渲染，那matlab就是一个很好的工具了。我只用了不到100行的代码就实现了一个简单的PBD场景：双摆系统，如下图所示。</p>
+<p><img src="/image/pbdspring.gif" alt="PBD Spring"><br>具体代码如下：</p>
+<figure class="highlight m"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line">clear;</span><br><span class="line">clc;</span><br><span class="line"><span class="comment">% rest configuration</span></span><br><span class="line">X0 <span class="built_in">=</span> [<span class="number">0</span>,<span class="number">2</span>,<span class="number">0</span>]<span class="string">&#x27;;</span></span><br><span class="line"><span class="string">X1 = [0,1,0]&#x27;</span>;</span><br><span class="line">X2 <span class="built_in">=</span> [<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>]<span class="string">&#x27;;</span></span><br><span class="line"><span class="string">% set inverse mass of spring particles</span></span><br><span class="line"><span class="string">invM0 = 0.0;</span></span><br><span class="line"><span class="string">invM1 = 1.0;</span></span><br><span class="line"><span class="string">invM2 = 1.0;</span></span><br><span class="line"><span class="string">% set velocities of spring particles</span></span><br><span class="line"><span class="string">v0 = [0,0,0]&#x27;</span>;</span><br><span class="line">v1 <span class="built_in">=</span> [<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>]<span class="string">&#x27;;</span></span><br><span class="line"><span class="string">v2 = [0,0,0]&#x27;</span>;</span><br><span class="line"><span class="comment">% spring reset length</span></span><br><span class="line">d1 <span class="built_in">=</span> norm(X1-X0);</span><br><span class="line">d2 <span class="built_in">=</span> norm(X2-X1);</span><br><span class="line"></span><br><span class="line"><span class="comment">% deformed configuration</span></span><br><span class="line">x0 <span class="built_in">=</span> [<span class="number">0.0</span>,<span class="number">2.0</span>,<span class="number">0.0</span>]<span class="string">&#x27;;</span></span><br><span class="line"><span class="string">x1 = [1.5,2.0,0.0]&#x27;</span>;</span><br><span class="line">x2 <span class="built_in">=</span> [<span class="number">3.0</span>,<span class="number">2.0</span>,<span class="number">0.0</span>]<span class="string">&#x27;;</span></span><br><span class="line"><span class="string">%time step</span></span><br><span class="line"><span class="string">h = 0.01;</span></span><br><span class="line"><span class="string">% external force</span></span><br><span class="line"><span class="string">f = [0,0,0]&#x27;</span>;</span><br><span class="line"><span class="comment">% gravity</span></span><br><span class="line">g <span class="built_in">=</span> [<span class="number">0</span>,-<span class="number">9.8</span>,<span class="number">0</span>]<span class="string">&#x27;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">% draw animation of springs</span></span><br><span class="line"><span class="string">figure;  grid on; axis equal; view(0,90);</span></span><br><span class="line"><span class="string">axis([-2,2, -2,2, -2,2]);</span></span><br><span class="line"><span class="string">for i = 1:10000</span></span><br><span class="line"><span class="string">    %semi-Euler method</span></span><br><span class="line"><span class="string">    v0 = v0 + h * invM0 * f;</span></span><br><span class="line"><span class="string">    v1 = v1 + h * invM1 * f + h * g;</span></span><br><span class="line"><span class="string">    v2 = v2 + h * invM2 * f + h * g;</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    % predicted positions</span></span><br><span class="line"><span class="string">    px0 = x0 + h * v0;</span></span><br><span class="line"><span class="string">    px1 = x1 + h * v1;</span></span><br><span class="line"><span class="string">    px2 = x2 + h * v2;</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    % constraint solving</span></span><br><span class="line"><span class="string">    for index = 1:5</span></span><br><span class="line"><span class="string">        [px0,px1] = solveDistanceConstraint(px0,px1,invM0,invM1,d1);</span></span><br><span class="line"><span class="string">        [px1,px2] = solveDistanceConstraint(px1,px2,invM1,invM2,d2);</span></span><br><span class="line"><span class="string">    end</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    % update velocities</span></span><br><span class="line"><span class="string">    v0 = (px0 - x0)/h;</span></span><br><span class="line"><span class="string">    v1 = (px1 - x1)/h;</span></span><br><span class="line"><span class="string">    v2 = (px2 - x2)/h;</span></span><br><span class="line"><span class="string">    % update positions</span></span><br><span class="line"><span class="string">    x0 = px0;</span></span><br><span class="line"><span class="string">    x1 = px1;</span></span><br><span class="line"><span class="string">    x2 = px2;</span></span><br><span class="line"><span class="string">    % draw springs</span></span><br><span class="line"><span class="string">    clf; hold on; grid on; axis equal; view(0, 90);</span></span><br><span class="line"><span class="string">    axis([-2,2, -1,3, -2,2]);</span></span><br><span class="line"><span class="string">    plotSpring(x0,x1,x2,&#x27;</span>-ob<span class="string">&#x27;);</span></span><br><span class="line"><span class="string">    drawnow();</span></span><br><span class="line"><span class="string">end</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function [px0,px1] = solveDistanceConstraint(px0,px1,invM0, invM1,d)</span></span><br><span class="line"><span class="string">% solveDistanceConstraint </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">% constraint</span></span><br><span class="line"><span class="string">c = norm(px0-px1) - d;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">% compute gradient</span></span><br><span class="line"><span class="string">g0 = (px1-px0)/norm(px1-px0);</span></span><br><span class="line"><span class="string">g1 = -g0;</span></span><br><span class="line"><span class="string">gradient = [g0;g1];</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">% inverse Mass matrix</span></span><br><span class="line"><span class="string">v = [invM0,invM0,invM0,invM1,invM1,invM1];</span></span><br><span class="line"><span class="string">invM = diag(v);</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">% common part: lagrangian multiplier</span></span><br><span class="line"><span class="string">lag = (gradient&#x27;</span> * invM * gradient) \ c;</span><br><span class="line"></span><br><span class="line">deltaX0 <span class="built_in">=</span> invM0 * lag * g0;</span><br><span class="line">deltaX1 <span class="built_in">=</span> invM1 * lag * g1;</span><br><span class="line"></span><br><span class="line">px0 <span class="built_in">=</span> px0 + deltaX0;</span><br><span class="line">px1 <span class="built_in">=</span> px1 + deltaX1;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function plotSpring(x0,x1,x2,color)</span><br><span class="line"><span class="comment">% plotSpring </span></span><br><span class="line">M <span class="built_in">=</span> zeros(<span class="number">3</span>,<span class="number">3</span>);</span><br><span class="line">M(:,<span class="number">1</span>) <span class="built_in">=</span> x0;</span><br><span class="line">M(:,<span class="number">2</span>) <span class="built_in">=</span> x1;</span><br><span class="line">M(:,<span class="number">3</span>) <span class="built_in">=</span> x2;</span><br><span class="line">order <span class="built_in">=</span> [<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">plot3(M(<span class="number">1</span>,order),M(<span class="number">2</span>,order),M(<span class="number">3</span>,order),color);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h2><p><a href="">Position based dynamics</a></p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

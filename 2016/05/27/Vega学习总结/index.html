@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Vega学习总结 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=vega>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Vega学习总结</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-05-27</span>
+  </div>
+  <div class="post-content">
+    <p>Vega库学习总结。</p>
+<span id="more"></span>
+
+<h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>Vega 库最重要的三个部分：</p>
+<ol>
+<li><strong>Volumetric Mesh</strong>，两种体网格:<em>TetMesh</em>和<em>CubeMesh</em></li>
+<li><strong>Force Model</strong><ul>
+<li>LinearFEMForceModel</li>
+<li>CorotationalFEMForceModel</li>
+<li>StvkForceModel</li>
+<li>IsotropicFEMForceModel</li>
+</ul>
+</li>
+<li><strong>Integrator</strong>,两种形式：<em>Dense</em> 和 <em>Sparse</em>两种形式。<br>其中<em>Sparse</em>形式包括：<ul>
+<li>Euler 即Forward Euler Integrator</li>
+<li>ImplicitBackwardEuler</li>
+<li>SymplecticEuler    </li>
+<li>ImplictNewMark</li>
+<li>CentralDifferences</li>
+</ul>
+</li>
+</ol>
+<h2 id="FEM"><a href="#FEM" class="headerlink" title="FEM"></a>FEM</h2><p>在solid mechanics中，使用弹性非线性偏微分方程来对三维可变性物体进行建模。使用了FEM对物体进行估计的时候，可以得到一个常微分方程来表示系统方程。<br>$$\begin{equation}\label{eq:1}<br>M \ddot{\mu} + D \dot{\mu}+f_{int}(\mu)= f_{ext}(t) \tag{1}<br>\end{equation}$$<br>其中$\mu \in \mathbb{R}^{3n}$表示有$n$个顶点的网格相对未变形状态(<em>reset configuration</em>)的位移，$M \in \mathbb{R}^{3n \times 3n}$表示质量矩阵(<em>mass matrix</em>),$D=\alpha M + \beta K(\mu) + \bar{D}$为阻尼矩阵(<em>damping matrix</em>)，$f_{int}(\mu) \in \mathbb{R}^{3n}$为内力(<em>internal elastic forces</em>)，$f_{ext}(t) \in \mathbb{R}^{3n}$表示外力(<em>external forces</em>)，比如：重力，风力，碰撞力，用户自己设定的力等。其中$f_{int}(\mu)$关于$\mu$的梯度$K(\mu)= \partial f_{int}(\mu) / \partial \mu \in \mathbb {R}^{3n \times 3n}$称为<strong>切向刚度矩阵</strong>(<code>tangent stiffness</code>)。其中的标量参数$\alpha$，$\beta$和$\bar{D}$控制材料的阻尼程度，$\alpha$表示”mass” damping的程度(就像在水中，物体整体变形都变慢一样),$\beta$表示”stiffness” damping(主要抑制相对变形速度差，在消除时间上高频不稳定很有用)，$\bar{D}$是外加的阻尼矩阵，可以设置为0，这样整个阻尼系统就是<strong>Rayleigh Damping</strong>。<br>方程$(1)$可以表示计算机图形学领域很多可变形物体模型，包括FEM可变形物体、衣物和弹簧质子系统。</p>
+<p>在用户提供了初始状态和边界条件的情况下，变形物体仿真器必须 <strong>timestep</strong>方程$(1)$。<br>初始状态包括：可变形物体的初始位置和初始速度。<br>边界条件包括：用户指定的固定顶点(物体变形过程中位移始终为0)。<br>仿真器必须能够存储3D体网格，包括他们的(可能随时间改变)材料属性。当然，也要能够计算$M,D,K(\mu)$和$f_{int}(\mu)$。<br>其中有些部分之间是相互独立的，可以分开实现。比如，内力(<em>internal forces</em>)的计算不依赖于timestep方程$(1)$的积分模式(<em>integration scheme</em>)，反之亦然。而且，积分器也不依赖于体网格类型(四面体还是六面体)。<br>Vega库正是利用这些成分之间的无关性才写出来的。如图3，是Vega实现的三个主要成分。<br><img src="/image/implementation.png" alt="图 3"></p>
+<h1 id="Vega-库运行步骤"><a href="#Vega-库运行步骤" class="headerlink" title="Vega 库运行步骤"></a>Vega 库运行步骤</h1><ol>
+<li><p>读取配置文件，一般以*.config*结尾</p>
+</li>
+<li><p>初始化OpenGL相关的设置</p>
+</li>
+<li><p>初始化仿真相关的设置<br>包括：</p>
+<ul>
+<li>初始化光照和相机</li>
+<li>读取体网格 </li>
+<li>读取RenderingMesh,为*.obj*格式</li>
+<li>设置ForceModel</li>
+<li>设置Integrator</li>
+</ul>
+</li>
+<li><p>处理交互，进行仿真。</p>
+<ul>
+<li>获取External Force</li>
+<li>Integrator-&gt;DoTimestep()</li>
+<li>更新RenderingMesh每个顶点的位置：原位置加上位移$\mu$</li>
+<li>重绘窗口</li>
+</ul>
+</li>
+</ol>
+<h1 id="Volumetric-Mesh"><a href="#Volumetric-Mesh" class="headerlink" title="Volumetric Mesh"></a>Volumetric Mesh</h1><p>Volumeetric Mesh 分为两类： TetMesh(四面体网格) 和 TubeMesh(六面体网格)。<br><strong>包含的信息</strong>：</p>
+<ul>
+<li>网格顶点的三维坐标</li>
+<li>元素连接关系</li>
+<li>每个元素的材料属性：Young’s modulus,Poisson’s ratio,mass density</li>
+</ul>
+<p><strong>支持的操作</strong>：</p>
+<ul>
+<li>加载和存储网格</li>
+<li>计算网格体积</li>
+<li>质点(<em>center of mass</em>)，惯性张量和网格质量矩阵</li>
+<li>标识每个顶点的邻接元素</li>
+<li>插值顶点变形到一个更高分辨率的嵌入式渲染网格</li>
+</ul>
+<p>为了指定三维集合结构并且支持设置材料属性，Vega引入了<strong>ASCII</strong>文件格式的<code>.veg</code>来存储四面体网格。它是Jonathan Shewchuk 三维网格几何结构文件格式的扩展，也是<a target="_blank" rel="noopener" href="http://wias-berlin.de/software/tetgen/">TetGen</a> (三维网格化软件)使用的文件格式。</p>
+<h2 id="TetMesh格式"><a href="#TetMesh格式" class="headerlink" title="TetMesh格式"></a>TetMesh格式</h2><p>在Vega中，四面体网格有特定的格式以<code>.veg</code>结尾。<br>四面体分为四部分：</p>
+<ol>
+<li>顶点列表(VERTICES)</li>
+<li>四面体列表(ELEMENTS)</li>
+<li>材料列表(MATERIALS)</li>
+<li>集合列表(SETS)</li>
+<li>区域列表(REGIONS)<br>该四面体网格文件是<em>Tetgen/Steller</em>生成文件的扩展格式。顶点和四面体可直接使用<em>Tetgen/Steller</em>生成的<code>.node</code>和<code>.ele</code>文件。</li>
+</ol>
+<h1 id="RenderingMesh"><a href="#RenderingMesh" class="headerlink" title="RenderingMesh"></a>RenderingMesh</h1><p>RenderingMesh:变形物体表面的三角形网格，用于渲染，我们可以直观看到物体的变形。<br>要构建物体的表面三角网格，步骤：<br>SceneObjecDeformable -&gt; SceneObjectWithRestPosition -&gt; SceneObject -&gt; ObjMesh(加载*.obj*文件)</p>
+<h1 id="Force-Model"><a href="#Force-Model" class="headerlink" title="Force Model"></a>Force Model</h1><p>总的来说有5种变形物体:(最重要的区别是求Internal Force的方法不同)</p>
+<ol>
+<li>LinearFEM<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LinearFEMForceModel * linearFEMForceModel = <span class="keyword">new</span> <span class="built_in">LinearFEMForceModel</span>(stVKInternalForces);</span><br></pre></td></tr></table></figure></li>
+<li>CorotationalFEM<br>TetMesh -&gt; CorotationalLinearFEM -&gt; CorotationalLinearFEMForceModel</li>
+<li>Stvk<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">StVKForceModel * stVKForceModel = <span class="keyword">new</span> <span class="built_in">StVKForceModel</span>(stVKInternalForces, stVKStiffnessMatrix);</span><br></pre></td></tr></table></figure></li>
+<li>InvertibleFEM，具体分为三种材料类型: <em>Invertiable_Stvk</em>,<em>Invertiable_NeoHookean</em>,<em>Invertiable_MooneyRivlin</em>.<ul>
+<li>TetMesh -&gt; StVKIsotropicMaterial -&gt; IsotropicHyperelasticFEM -&gt;IsotropicHyperelasticFEMForceModel</li>
+<li>TetMesh -&gt; NeoHookeanIsotropicMaterial -&gt; IsotropicHyperelasticFEM -&gt;IsotropicHyperelasticFEMForceModel</li>
+<li>TetMesh -&gt; MooneyRivlinIsotropicMaterial -&gt; IsotropicHyperelasticFEM -&gt;IsotropicHyperelasticFEMForceModel<br>其中<em>StVKIsotropicMaterial</em>，<em>NeoHookeanIsotropicMaterial</em>，<em>MooneyRivlinIsotropicMaterial</em>,都为<em>IsotropicMaterial</em>的子类。</li>
+</ul>
+</li>
+<li>Masspring</li>
+</ol>
+<h2 id="Internal-Force-and-Stiffness-Matrix"><a href="#Internal-Force-and-Stiffness-Matrix" class="headerlink" title="Internal Force and Stiffness Matrix"></a>Internal Force and Stiffness Matrix</h2><p>Vega中计算internal forces 和stiffness matrix的类为：</p>
+<ul>
+<li>CorotationalLinearFEM</li>
+<li>StVKInternalForces</li>
+<li>StVKStiffnessMatrix</li>
+<li>IsotropicHyperelasticFEM</li>
+<li>MassSpringSystem</li>
+</ul>
+<p>每个类的<strong>输入</strong>都是：volumetric mesh和该模型需要的材料属性参数。<br>只有mass-spring system和Saint-Venant Kirchhoff支持四面体和六面体网格。但其他的都只支持四面体网格。</p>
+<p>为了给Integrator提供一个统一的接口。Vega使用一个虚基类”ForceModel”。它提供两个虚函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">GetInternalForce</span><span class="params">(<span class="keyword">double</span> *u, <span class="keyword">double</span> *internalForces)</span></span>=<span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">GetTangentStiffnessMatrix</span><span class="params">(<span class="keyword">double</span> *u,SparseMatrix *tangentStiffnessMatrix)</span></span>=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>之后，每种材料类型的可变性物体都继承自这个虚基类，就出具体的内力和刚度矩阵。<br>这样做的好处就是将Integrator与具体的材料模型分离开，Integrator只需要一个指向虚基类”ForceModel”的指针就可以了。</p>
+<h1 id="Integrator"><a href="#Integrator" class="headerlink" title="Integrator"></a>Integrator</h1><p>Intergrator的作用就是根据系统方程，求出网格顶点位移(速度or加速度)。<br><strong>Vega实现如下4类</strong>：</p>
+<ul>
+<li>EulerSparse</li>
+<li>ImplicitBackwardEulerSparse</li>
+<li>ImplicitNewmarkSparse</li>
+<li>CentralDifferenceSparse</li>
+</ul>
+<p>每个类的<strong>输入</strong>：Internal Force 和 Stiffness Matrices。</p>
+<p>具体来说就是更新$x(positon),\quad v(velocity),\quad, a(acceleration)$。<br>虚基类<em>IntegratorBase</em>-&gt;<em>IntegratorBaseSparse</em><br>虚基类<em>IntegratorBaseSparse</em>又有不同的子类，提供不同的方法来求解常微分方程(ODEs)。包括：</p>
+<h2 id="Euler"><a href="#Euler" class="headerlink" title="Euler"></a>Euler</h2><p>输入：$f_{external},\quad f_{internal},\quad f_{damping}$<br>输出：None<br>具体步骤：<br>$$v^{n+1} = v^{n} + h \ast (F_{n}/m)\<br>x^{n+1} = x^{n} + h \ast v^{n+1}$$<br>其中$F_{n} = f_{external}-f_{internal}-f_{damping}$。<br>此时利用预条件共轭梯度法PCG求解方程$M * \ddot{\mu} = F_{n}$，可以得出加速度$\ddot{\mu}$。<br>最后可以得出：<br>$$x^{n+1} = x^{n} + h \ast v^{n}\<br>v^{n+1} = v^{n} + h \ast \ddot{\mu}$$<br>或者<br>$$v^{n+1} = v^{n} + h \ast \ddot{\mu} \<br>x^{n+1} = x^{n} + h \ast v^{n+1}$$</p>
+<h2 id="ImplicitBackwardEuler"><a href="#ImplicitBackwardEuler" class="headerlink" title="ImplicitBackwardEuler"></a>ImplicitBackwardEuler</h2><p>算法步骤：</p>
+<ol>
+<li>保存$x^{n},v^{n}$,设置$a^{n} = 0$，因为在这个integrator中并不需要加速度。</li>
+<li>从forceModel获取$f_{internal}$,和tagent stiffness matrix $K$。</li>
+<li>如果使用的staticSolver,执行第4步，否则，执行第5步。</li>
+<li>由$f_{internal}+K \ast \dot {\mu} = f_{external}$得，$qresidual = f_{exteral}-f_{internal},\quad qdelta = qresidual$,跳转到步骤?。</li>
+<li>$D_{Rayleigh} = \alpha M + \beta K$</li>
+</ol>
+<p>文档中该方法如下：<br>设：<br>$$\begin{align}<br>\mu_{t+\Delta t} &amp;= \mu_{t} + \Delta \mu\<br>v_{t+\Delta t} &amp;= v_{t} + \Delta v<br>\end{align}$$<br>则：<br>$$<br>\begin{bmatrix}<br>\Delta u\<br>\Delta v<br>\end{bmatrix} = \Delta t<br>\begin{bmatrix}<br>\Delta v + v_{t}\<br>M^{-1}(-DV_{t+\Delta t}-f_{int}(\mu_{t+\Delta t})+f_{ext})<br>\end{bmatrix}<br>$$<br>由方程$(1)$得出：$M \frac{\Delta v}{\Delta v} + D v_{v_{t+\Delta t}} + f_{int}(u_{t+\Delta t}) = f_{ext}$，又因为$f_{int}$为非线性函数，可以利用其Taylor展开式进行线性化：$f_{int}(u_{t+\Delta t})=f(\mu_{t})+\frac{\partial f}{\partial \mu}\Delta \mu = f(\mu_{t})+K\Delta \mu$代入方程$(1)$可得：<br>$$(M+\Delta t D + (\Delta t)^{2}K)\Delta v = \Delta t(f_{ext}-f_{int}(\mu_{t})-(\Delta t K +D)V_{t})$$<br>从上式可以求出$\Delta v$，然后再求出$\Delta \mu$和$\mu_{t+\Delta t}$。</p>
+<h2 id="SymplecticEuler"><a href="#SymplecticEuler" class="headerlink" title="SymplecticEuler"></a>SymplecticEuler</h2><p>挖的坑。。。。。待填！！！</p>
+<h2 id="ImplictNewMark"><a href="#ImplictNewMark" class="headerlink" title="ImplictNewMark"></a>ImplictNewMark</h2><p>这种方法在固体力学仿真中很受欢迎，主要是因为它的quadratic-order timestep accuracy（二阶精度）。<br>缺点：实际运用当中它没有Implicit Backward Euler方法稳定<br>优点：动画效果更好，没有明显的阻尼缺陷(artificial damping)。</p>
+<p>假定当前位移$\mu_{t}$,速度$v_{t}$,加速度$a_{t}$。<br>则：<br>    $$\begin{align}<br>    u_{t+\Delta t} &amp;=u_{t}+\Delta t \cdot v_{t}+\frac{(\Delta t)^{2}}{2}((1-2\beta)a_{t}+2\beta a_{t+\Delta t})\<br>    v_{t+\Delta t} &amp;= v_{t} + \Delta t((1-\gamma)a_{t}+\gamma a_{t+\Delta t})<br>    \end{align}$$<br>其中$0 \leq \beta \leq 0.5, 0 \leq \gamma \leq 1$是用户设定的参数。通常情况下取$\beta = 0.25,\gamma = 0.5$，使得结果具有二阶精度。<br>对上式进行转换，得到：<br>$$\begin{align}<br>a_{t+\Delta t} &amp;= \frac{1}{\beta (\Delta t)^{2}}(u_{t+\Delta t}-u_{t})-\frac{1}{\beta \Delta t}v_{t}-\frac{1-2\beta}{2\beta}a_{t})\<br>v_{t+\Delta t} &amp;= \frac{\gamma}{\beta \Delta t}(u_{t+\Delta t}-u_t)+(1-\frac{\gamma}{\beta})v_{t}+(1-\frac{\gamma}{2\beta})\Delta t \cdot a_{t}<br>\end{align}$$<br>将$a_{t+\Delta t},v_{t+\Delta t}$代入公式(1)可得一个关于$\mu_{t+\Delta t}$非线性方程:<br>$$\begin{align}<br>G(t+\Delta t) &amp;= M a_{t+\Delta t} + D v_{t+\Delta t} + f_{int}(u_{t+\Delta t})-(f_{ext})_{t+\Delta t} \\ &amp;= 0<br>\end{align}$$<br>为了求出$\mu_{t+\Delta t}$,使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton-Raphson</a>方法来进行迭代求解。<br>从$u_{t+\Delta t}^{0} = u_{t}$开始，每次通过在当前$u_{t+\Delta t}^{i}$处的刚度矩阵和$f_{int}$迭代求出$u_{t+\Delta t}^{i+1}$：<br>$$<br>(\frac{1}{\beta(\Delta t)^{2}}M + \frac{\gamma}{\beta \Delta t}D + \frac{\partial f_{int}}{\partial \mu} \mid_{u=u_{i+\Delta t}^{i}})\Delta \mu_{t+\Delta t}^{i+1}  = - G(\mu_{t+\Delta}^{i})<br>$$<br>其中$\mu_{t+\Delta t}^{i+1} = \mu_{t+\Delta t}^{i} +\Delta \mu_{t+\Delta t}^{i+1}$,当$G(\mu_{t+\Delta}^{i})$小于某阈值后者超过设定的最大迭代次数时停止计算。</p>
+<h2 id="CentralDifferences"><a href="#CentralDifferences" class="headerlink" title="CentralDifferences"></a>CentralDifferences</h2><p>这种方法是一种显示求解法，但需要设定很小的仿真步长(timestep)。更新方程如下：<br>$$\begin{align}<br>(M+\frac{\Delta t}{2}D)(u_{t+\Delta t}-u_{t})&amp;=(\Delta t)^{2}(f_{ext}-t_{int}(u_{t}))+\frac{\Delta t}{2}D(u_{t-\Delta t}-u_{t})+M(u_{t}-u_{t-\Delta t})\<br>v_{t+\Delta t} &amp;= \frac{u_{t+\Delta t}-u_{t}}{\Delta t}<br>\end{align}$$<br>Central Differences 的timestep比implicit Newmark 的timestep要快，因为没有必要每一步都构造切向刚度矩阵。而且，如果阻尼矩阵不随时间改变的话，$M+\frac{\Delta t}{2}D$可以提前计算出来。<br>对于Rayleigh damping，$D(\mu) = \alpha M + \beta K(\mu)$随时间改变。但可以忽略刚度矩阵$K$对$\mu$的依赖，简单的设定$K = K(0)$，但这样做在大变形仿真的时候会出现明显的damping artifacts。所以一个合理的替代方法就是周期性的更新$K(\mu)$并重新计算$M+\frac{\Delta t}{2}D$。</p>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="Vega支持的类"><a href="#Vega支持的类" class="headerlink" title="Vega支持的类"></a>Vega支持的类</h2><p>除了前面讲到的核心类,Vega还提供很多辅助的类：</p>
+<ul>
+<li>系数矩阵相关的计算和存储类</li>
+<li>加载和存储obj网格的类</li>
+<li>使用OpenGL渲染网格的类</li>
+<li>测量运算时间的类</li>
+<li>分析配置文件的类</li>
+<li>线性方程组的迭代求解法：PCG类，其他实现方法可参考<a target="_blank" rel="noopener" href="http://rainvector.github.io/2016/05/11/%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84%E7%9A%84%E8%BF%AD%E4%BB%A3%E6%B1%82%E6%B3%95/">Here</a></li>
+</ul>
+<h2 id="Free-Flying-objects"><a href="#Free-Flying-objects" class="headerlink" title="Free-Flying objects"></a>Free-Flying objects</h2><p>在没有固定顶点的情况下，刚度矩阵$K$就是一个奇异矩阵。刚度矩阵$K$的核空间维度为游离硬质自由度的数量(the number of free rigid degrees of freedom)。在没有顶点限制的情况下为6，或者更少。<br>要想将游离硬质自由度的数量降为0，需要设置3个不共线的点为不动点才行。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/vega/" rel="tag">vega</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

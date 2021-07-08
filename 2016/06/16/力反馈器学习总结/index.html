@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>力反馈器学习总结 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=力反馈>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">力反馈器学习总结</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-06-16</span>
+  </div>
+  <div class="post-content">
+    <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>在Vega的程序中，外力向量是提前设定好的或者是由鼠标位移产生的。为了增加真实感，加入力反馈设备，可以直接使用设备与模型进行交互。力反馈不仅可以对物体施加力，还可以把物体对设备的反力传递回来。特别是在对医学仿真器中，力反馈设备是必不可少的。<br>我这次使用的设备是<code>OpenHaptics Toolkit version 3.2</code>。它提供了3种API，<code>QuickHaptic</code>,<code>Hpatic Library</code>(<em>HLAPI</em>)，<code>Haptic Device</code>(<em>HDAPI</em>)，抽象程度递减。最上层的<code>QuickHaptic</code>只要简单的几句就可以实现一个力反馈实例，可以不用管OpenGL是怎么画的。<code>Haptic Library</code>可以实现与OpenGL的结合，一般都用这个API，也很容易上手。而<code>Haptic Device</code>更偏重于底层，包括力的传递，触觉范式，线程的调度等，很复杂，所以在实际的编程中仅仅使用其中很少的一些函数。</p>
+<span id="more"></span>
+
+<h1 id="HLAPI"><a href="#HLAPI" class="headerlink" title="HLAPI"></a>HLAPI</h1><p>其实力反馈程序同OpenGL一样也是有限状态机形式。如下是使用HLAPI编写力反馈程序的流程图：<br><img src="/image/haptic.svg" alt="流程图"></p>
+<blockquote>
+<ol>
+<li>Creating graphic rendering context,tying it to window to setup OpenGL</li>
+<li>Creating haptic rendering context,tying it to haptic device to initialize HLAPI</li>
+<li>Set Map Function(haptic workspace -&gt; graphic workspace)</li>
+<li>Render Graphics using OpenGL</li>
+<li>Process Events(Button down/up etc)</li>
+<li>Render Haptics(Feedback/Depth buffer)</li>
+<li>Render Cursor(SCP)</li>
+</ol>
+</blockquote>
+<h1 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h1><p>初始化分3部分: OpenGL 初始化,Haptic 初始化和读入模型。</p>
+<h2 id="OpenGL初始化"><a href="#OpenGL初始化" class="headerlink" title="OpenGL初始化"></a>OpenGL初始化</h2><p>创建窗口，设置显示模式，设置glut回调函数，设置光照参数以及其他一些OpenGL参数。</p>
+<h2 id="Haptic初始化"><a href="#Haptic初始化" class="headerlink" title="Haptic初始化"></a>Haptic初始化</h2><ol>
+<li>初始化设备<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HHD ghHD = <span class="built_in">hdInitDevice</span>(HD_DEFAULT_DEVICE); </span><br></pre></td></tr></table></figure></li>
+<li>创建上下文环境<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HLRC ghHLRC = <span class="built_in">hlCreateContext</span>(ghHD);</span><br><span class="line"><span class="built_in">hlMakeContext</span>(ghHLRC);</span><br></pre></td></tr></table></figure></li>
+<li>设置事件回调函数<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">hlAddEventCallback</span>(HLenum event, HLuint object,</span><br><span class="line">                   HLenum thread, HLeventProc fn, </span><br><span class="line">                   <span class="keyword">void</span> *userdata);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="读入模型"><a href="#读入模型" class="headerlink" title="读入模型"></a>读入模型</h2><ol>
+<li>读入三维模型，体网格模型等</li>
+<li>每个模型都要有一个ID，这样力反馈设备才能感知到。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HLuint shapID = <span class="built_in">hlGenShapes</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure></li>
+<li>创建displaylist。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GLuint displayList = <span class="built_in">glGenLists</span>(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">glNewList</span>(displayList,GL_COMPILE);</span><br><span class="line"><span class="comment">/*----- render obj models ----------*/</span></span><br><span class="line"><span class="built_in">glEndList</span>();</span><br></pre></td></tr></table></figure></li>
+<li>为模型设置事件回调函数（如果模型需要有回调函数的话才设置）<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">hlAddEventCallback</span>(HLenum event, HLuint object,</span><br><span class="line">                   HLenum thread, HLeventProc fn, </span><br><span class="line">                   <span class="keyword">void</span> *userdata);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="绘制"><a href="#绘制" class="headerlink" title="绘制"></a>绘制</h1><p>绘制分两部分：Graphics绘制和Haptic绘制。OpenGL和Haptic共用相同的缓冲数据绘制。</p>
+<h2 id="Graphics-绘制"><a href="#Graphics-绘制" class="headerlink" title="Graphics 绘制"></a>Graphics 绘制</h2><p>和传统的绘制方法没有区别</p>
+<h2 id="Haptic绘制"><a href="#Haptic绘制" class="headerlink" title="Haptic绘制"></a>Haptic绘制</h2><p>绘制过程必须在<code>hlBeginFrame()</code>和<code>hlEndFrame()</code>之间，而且在这之间不能改变数据。</p>
+<ol>
+<li>开始绘制</li>
+<li>检查事件</li>
+<li>绘制模型</li>
+<li>绘制Cursor</li>
+<li>结束绘制<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">hlBeginFrame</span>();</span><br><span class="line"><span class="built_in">glClear</span>(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT); <span class="comment">//必须清除缓冲区</span></span><br><span class="line"><span class="built_in">glCheckEvents</span>();</span><br><span class="line"><span class="built_in">hlBegin</span>(HL_SHAPE_FEEDBACK_BUFFER,shapeID);</span><br><span class="line"><span class="comment">/* render model */</span></span><br><span class="line"><span class="built_in">glEndShape</span>();</span><br><span class="line"><span class="built_in">hlEndFrame</span>();</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%8A%9B%E5%8F%8D%E9%A6%88/" rel="tag">力反馈</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

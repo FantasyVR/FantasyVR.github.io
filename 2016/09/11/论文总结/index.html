@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>论文总结 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">论文总结</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-09-11</span>
+  </div>
+  <div class="post-content">
+    <p>在此记录读过的论文和对论文的总结！主要记录的是物理仿真方面的论文，现在研读的是FEM和PBD相关的变形、切割、缝合的论文。</p>
+<span id="more"></span>
+
+<h1 id="PBD"><a href="#PBD" class="headerlink" title="PBD"></a>PBD</h1><p>PBD(Position Based Dynamics),最初是由$Matthias Muller$在2006年的文章<a target="_blank" rel="noopener" href="http://matthias-mueller-fischer.ch/publications/posBasedDyn.pdf">Position Based Dynamics</a>系统提出来。</p>
+<p>PBD的进行仿真的步骤：<br>PBD分三步对particles组成的物体的位置$x$和速度$v$进行更新。</p>
+<ol>
+<li>预测阶段<br>这个阶段使用explicit Euler integration方法得到particle的预测位置$x_{p}=x+v\Delta t$。</li>
+<li>solver迭代求解各种约束，更正预测位置(不是速度)。这也是这种方法名字的由来。</li>
+<li>更新particles的位置和速度<br>$$\begin{align}<br>&amp; v=(x_{p}-x)/\Delta t, \<br>&amp; x = x_{p}.<br>\end{align}$$</li>
+</ol>
+<p>这种方法是无条件稳定(unconditional stable)的，因为位置更正不会超调(overshoot)。注意到，在第二步更正预测位置时会影响particles的速度，所以利用PBD得到的是一个关于时间的二阶系统。</p>
+<p>下面是利用PBD进行物理仿真的论文。</p>
+<h2 id="Solid-Simulation-with-Oriented-Particles"><a href="#Solid-Simulation-with-Oriented-Particles" class="headerlink" title="Solid Simulation with Oriented Particles"></a>Solid Simulation with Oriented Particles</h2><p>这篇文章的核心方法就是</p>
+<ol>
+<li>在传统PBD的基础上将particles的方向(orientation)和角速度(angular velocity)也存储起来。</li>
+<li>提出了一种统一的shape matching 方法。</li>
+<li>利用椭圆体而不是球体来对物体建模，碰撞检测更精确，利于线性蒙皮处理。</li>
+</ol>
+<h3 id="核心仿真流程"><a href="#核心仿真流程" class="headerlink" title="核心仿真流程"></a>核心仿真流程</h3><p>particles仿真时初始化position: $x$,velocity: $v$,orientation unit quaternion: $q$,angular velocity: $\omega$</p>
+<ol>
+<li>预测阶段<br>与传统PBD相同，也使用explicit Euler method<br>$$\begin{align}<br>&amp; x_{p} = x + \Delta t,\<br>&amp; q_{p} = [\frac{\omega}{\left | \omega \right |}sin(\frac{\left | \omega \right | \Delta t}{2}),cos(\frac{\left | \omega \right | \Delta t}{2})]q<br>\end{align}$$</li>
+<li>solver迭代求解各种约束之后，利用shape matching更正预测位置，所有particles置于目标位置。</li>
+<li>更新particles的位置、速度、方向、角速度<br>$$\begin{align}<br>&amp; v = (x_{p}-x)/ \Delta t \<br>&amp; x = x_{p} \<br>&amp; \omega = axis(q_{p}q^{-1}) \cdot angle(q_{p}q^{-1})/ \Delta t \<br>&amp; q = q_{p}<br>\end{align}$$<br>其中$axis()$为quaternion的单位法向，$angle()$为其角度。如果$\left | angle(q_{p}q^{-1}) \right | &lt; \epsilon$,$\omega$设为0。</li>
+</ol>
+<h3 id="Shape-Matching"><a href="#Shape-Matching" class="headerlink" title="Shape Matching"></a>Shape Matching</h3><p>已知：物体由$n$个particles组成，$\bar{x}_{i}$:rest position,$x_{i}$:current position,$m_{i}$:mass。<br>求平移矩阵$t$和旋转矩阵$R$使得经过变换后rest state最匹配current state。当然使用的least squares method。<br>步骤：</p>
+<ol>
+<li>构建moment matrix $A$<br>$$\begin{equation}\label{eq:1}<br>A = \sum_{i}m_{i}(x_{i}-c)(\bar{x}_{i}-\bar{c})^{T} \in R^{3 \times 3} \tag{1}<br>\end{equation}$$<br>where:<br>$$\begin{equation}\label{eq:2}<br>c = \sum_{i}m_{i}x_{i}/ \sum_{i}m_{i}    \tag{2}<br>\end{equation}$$<br>$$\begin{equation}\label{eq:3}<br>\bar{c} = \sum_{i}m_{i} \bar{x}_{i}/ \sum_{i}m_{i}  \tag{3}<br>\end{equation}$$</li>
+<li>对$A$进行极分解(polar decomposition): $A=RS$得到最小二乘最优旋转矩阵$R$和平移矩阵$t = c - \bar{c}$。</li>
+<li>每个particle的目标位置$g_{i}=R(\bar{x}_{i}-\bar{c})+c$。</li>
+</ol>
+<p>以上所说的shape matching方法有个确定就是如果物体接近共面或者共线时，$A$变得ill-conditioned 或者奇异(sigular)。所以这篇文章进行了改进：<br>$$\begin{equation}\label{eq:4}<br>A = \sum_{i}(A_{i}+m_{i}x_{i}\bar{x}_{i}^{T})-Mc\bar{c}^{T} \tag{4}<br>\end{equation}$$<br>此时得到的moment matrix可以看做GMLS的特殊形式，此时$A$是满秩矩阵。</p>
+<h3 id="物体的椭球体表示法"><a href="#物体的椭球体表示法" class="headerlink" title="物体的椭球体表示法"></a>物体的椭球体表示法</h3><p>在使用椭球体表示物体时，这篇文章要解决的问题是：</p>
+<ol>
+<li>如何正确的解决碰撞检测问题；</li>
+<li>如何在仿真之前找到椭球的主轴。</li>
+</ol>
+<p>步骤：</p>
+<ol>
+<li>对于某个particle，找出其半径范围内所有的graphical vertices组成的集合$S$；</li>
+<li>计算集合$S$的协方差矩阵(co-variance matrix)$C$;</li>
+<li>对$C$进行极分解 $C = RS$，得出椭球的方向(orientation)。</li>
+<li>利用Oriented Bounding Box(OBB)方法求出主轴半径(principal radii)。</li>
+</ol>
+<h3 id="总体仿真框架"><a href="#总体仿真框架" class="headerlink" title="总体仿真框架"></a>总体仿真框架</h3><ol>
+<li>首先读入一个mesh</li>
+<li>使用spray tool得出一个由圆球组成的物体</li>
+<li>自动生成椭球表示的物体，并设置刚度参数等</li>
+<li>使用spray tool生成连接边</li>
+<li>碰撞检测，变形等仿真。<br>下面是一个实例：<br><img src="/image/fangzhenkuangjia.png" alt="仿真框架实例"></li>
+</ol>
+<h2 id="Unified-Particle-Physics-for-Real-Time-Applications"><a href="#Unified-Particle-Physics-for-Real-Time-Applications" class="headerlink" title="Unified Particle Physics for Real-Time Applications"></a>Unified Particle Physics for Real-Time Applications</h2><p>这是NVIDIA公司发布的一个开源物理引擎Flex。文章<a target="_blank" rel="noopener" href="http://mmacklin.com/uppfrta_preprint.pdf">pdf</a>。</p>
+<h1 id="FEM"><a href="#FEM" class="headerlink" title="FEM"></a>FEM</h1><p>FEM(Finite Element Method)</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%89%A9%E7%90%86/" rel="tag">物理</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Position Based Dynamics - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Position Based Dynamics</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-08-15</span>
+  </div>
+  <div class="post-content">
+    <p>也许<code>Position Based Dynamics</code> (PBD) 刚开始看的时候感觉很简单，但是它其实具有深刻的物理含义，而且在游戏当中应用的非常非常广泛。学习了那么久，该总结一下了。</p>
+<span id="more"></span>
+
+<h1 id="什么是PBD？"><a href="#什么是PBD？" class="headerlink" title="什么是PBD？"></a>什么是PBD？</h1><p>PBD的方法是由 <a target="_blank" rel="noopener" href="http://matthias-mueller-fischer.ch/publications/posBasedDyn.pdf">Muller</a> 在2006年提出来的。PBD主要解决的是物体变形问题。在它之前很多的方法都是基于力的方法来对物体的变形进行建模。可以举个栗子：一个质量为$m$ 的物体，初速度为$v_{0}$，初始位置$x_{0}$。如何得到$t$时刻物体的速度和位置？其实就是由物体的初始状态来预测它未来的状态，它的运动轨迹。<br><strong>传统方法</strong>：<br>计算物体在$t$时刻所受外力$F$，由牛顿第二定律$F=ma$，得到$t$时刻物体的加速度，然后使用前向欧拉法（也可以是后向欧拉法等），得到物体在$t+1$时刻的速度：$v_{t+1} = v_{t} + a \Delta t$，由$t+1$时刻的速度得到物体的位置 $x_{t+1} = x_{t} + v_{t+1} \Delta t$。 如果物体碰到了另一个物体，就要求出两个物体之间的相互作用力，然后得到加速度。</p>
+<p>比如：对于已知初始状态的刚体，我们可以由下面的一阶常微分方程来数值积分得到下一时刻物体的状态。<br>$$<br>\frac{d}{d t}<br>\begin{pmatrix}<br>\mathbf{x}(t) \<br>\mathbf{R}(t) \<br>\mathbf{P}(t) \<br>\mathbf{L}(t)<br>\end{pmatrix}<br>=<br>\begin{pmatrix}<br>\mathbf{v}(t) \<br>\mathbf{\omega}^{\star}(t)\mathbf{R}(t) \<br>\mathbf{f}(t) \<br>\mathbf{\tau}(t)<br>\end{pmatrix}<br>$$<br>对于位置$\mathbf{x}(t)$和方向$\mathbf{R}(t)$。来看一下我们的积分过程（可用前向欧拉法）：<br>$\mathbf{f}(t)$ -&gt; $\mathbf{P}(t)$ -&gt; $\mathbf{v}(t)$ -&gt; $\mathbf{x}(t)$。<br>$\mathbf{f}(t)$ -&gt; $\mathbf{\tau}(t)$ -&gt; $\mathbf{L}(t)$ -&gt; $\mathbf{\omega}(t)$ -&gt; $\mathbf{R}(t)$。</p>
+<p>所以，整个求解过程中最重要的就是 <strong>力</strong>。<br>刚体的例子参考2018年SIGGRAPH：<a target="_blank" rel="noopener" href="https://dl.acm.org/citation.cfm?id=3214849">An Introduction to Physics-based Animation</a></p>
+<p><strong>PBD</strong>：<br>PBD中最重要的一个概念就是<em>约束</em>。比如，物体必须在一个平面的上面。物体受重力从平面上往下下落，这一部分也可以用前向欧拉法进行位置和速度的更新。我们就要检测它下落过程中位置是不是满足约束，也就是说它的位置是不是在平面上。如果物体穿过平面，跑到平面下面了。我们直接沿着垂直的方向把物体投影到平面上，让它不能穿过平面。这个过程中，我们没有求力啊什么的。</p>
+<p><strong>比较</strong><br>传统方法和PBD方法的最大区别就是 <strong>力</strong>。传统方法都要对物体进行受力分析，然后建立牛顿第二定律求加速度，速度和位置。 而PBD方法是不计算力的，直接对物体的位置进行修正。</p>
+<h1 id="高斯最小二乘约束法则"><a href="#高斯最小二乘约束法则" class="headerlink" title="高斯最小二乘约束法则"></a>高斯最小二乘约束法则</h1><p>根据<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Gauss%27s_principle_of_least_constraint">高斯最小二乘约束法则</a>，受约束和重力$g$的点，它的运动轨迹可以表示为：<br>$$Z =min{\sum_{a \in A} m_{a} | \ddot{\mathbf{p}}_{a} - \mathbf{g}|^2}. \tag{2-1}$$<br>其中$\ddot{\mathbf{p}}$表示点的加速度。<br>其中$\ddot{\mathbf{p}}_{a} - \mathbf{g}$ 的物理意义是：</p>
+<blockquote>
+<p>约束对加速度的改变有多大</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Gauss%27s_principle_of_least_constraint">高斯最小二乘约束法则</a> 的物理意义是：</p>
+<blockquote>
+<p>受到约束物体，它的运动轨迹是约束对加速度改变的总和的最小值。</p>
+</blockquote>
+<h1 id="PBD的物理解释"><a href="#PBD的物理解释" class="headerlink" title="PBD的物理解释"></a>PBD的物理解释</h1><p>其实PBD这个方法研究的就是一个带约束物体的运动问题。所以，我们可以利用高斯最小二乘约束法则。<br>令$\mathbf{p}^{t}$和$\mathbf{v}^{t}$分别表示一个质点在$t$时刻的位置和速度，$\Delta t$是一个时间步长。那么，下一时刻质点的位置为：<br>$$\mathbf{p}^{t+\Delta t} = \mathbf{p}^{t} + \Delta t(\mathbf{v}^{t} + \Delta t \mathbf{g}) + \Delta \mathbf{p}$$，<br>其中$\Delta \mathbf{p}$就是约束对质点位置的修正。<br>此时物体的速度为：<br>$$\mathbf{v}^{t+\Delta t} = (\mathbf{p}^{t+\Delta t} - \mathbf{p}^{t}) / \Delta t = \mathbf{v}^{t} + \Delta t \mathbf{g} + \Delta \mathbf{p} / \Delta t$$。<br>最后，我们可以得到质点的加速度为：<br>$$\ddot{\mathbf{p}} = (\mathbf{v}^{t+\Delta t} - \mathbf{v}^{t})/\Delta t = \Delta \mathbf{p}/\Delta t^2 + g$$<br>将上面的加速度代入到$(2-1)$中我们可以得到约束对位置的修正$\Delta \mathbf{p}$：<br>$$<br>\begin{align}<br> \arg \underset{\Delta \mathbf{p}} {\min} \sum_{a \in A} m_a |\Delta \mathbf{p}_{a} |^2 &amp;= \arg \underset{\Delta \mathbf{p}} {\min} \Delta \mathbf{p}^{T} \mathbf{M}\Delta \mathbf{p} = \frac{1}{2}\arg \underset{\Delta \mathbf{p}} {\min} \Delta \mathbf{p}^{T} \mathbf{M}\Delta \mathbf{p}, \<br>\textrm{subject to} \quad \mathbf{C}(\mathbf{p} + \Delta \mathbf{p}) &amp;= 0.<br>\end{align}. \tag{3-1}<br>$$</p>
+<blockquote>
+<p>为了后面计算方便，我在目标函数前面乘了一个$\frac{1}{2}$ </p>
+</blockquote>
+<p>这是一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Quadratic_programming">二次规划</a>(Quadratic minimization problem)问题，用拉格朗日乘子法可以很轻松的解决这个问题。假设有 $M$个约束，我们引入的拉格朗日乘子 $\mathbf{\lambda} \in \mathbb{R}^{M} $，最后我们可以得到一个无约束的目标函数：<br>$$<br>L(\Delta \mathbf{p}, \mathbf{\lambda}) = \sum_{a \in A} m_{a} | \Delta \mathbf{p}_{a}|^2 + \mathbf{\lambda}^{T} \mathbf{C}. \tag{3-2}<br>$$</p>
+<p>要求目标方程的最小值，我们对目标方程关于$\Delta \mathbf{p}$ 和 $\mathbf{\lambda}$ 分别求导，并且令一阶导数为0。可以得到：<br>$$\mathbf{M} \Delta \mathbf{p} +  \nabla \mathbf{C} \mathbf{\lambda}= 0$$<br>化简一下可以得到：<br>$$\Delta \mathbf{p}  = -\mathbf{M}^{-1} \nabla \mathbf{C}\mathbf{\lambda}, \tag{3-3}$$<br>其中$\nabla$是约束关于位置的梯度。</p>
+<p>在公式$(3-3)$中，我们看到有两个未知量：$\Delta \mathbf{p}$ 和 拉格朗日乘子 $\nabla \mathbf{C}$。所以，我们还需要一个方程才能解出这两个未知量。这就是下面要讲的：<strong>约束</strong>。</p>
+<h2 id="约束"><a href="#约束" class="headerlink" title="约束"></a>约束</h2><p>约束是个问题。不同的物体，不同的场景，我们可以设计出非常之多的约束，约束的形式也很多样，它可以是不等式，也可以是等式，它可以是线性的，也可是非线性的，可以是凸函数也可以非凸函数。一般约束都是在仿真之前就已经确定了的。<br>举个栗子：<br>两个质点$\mathbf{p}_{1}$和$\mathbf{p}_{2}$，我们可以设置一个约束，他们两个之间距离必须为 $l$。那么这个约束就可以写成：<br>$$C(\mathbf{p}_{1}, \mathbf{p}_{2}) = |\mathbf{p}_{1} - \mathbf{p}_{2}| - l = 0$$<br>这个距离约束是一个标量函数，它也是非线性的一个约束。</p>
+<p>那么在PBD中，我们如何处理这种约束呢？<br>PBD的处理方法很简单，对约束进行泰勒展开，我们只保留线性部分。那么就可以得到：<br>$$\mathbf{C}(\mathbf{p} + \Delta \mathbf{p}) = \mathbf{C}(\mathbf{p}) + \nabla \mathbf{C}(\mathbf{p}) \cdot \Delta \mathbf{p} = \mathbf{C} + \nabla \mathbf{C}(\mathbf{p})^T  \Delta \mathbf{p} = 0. \tag{3-4}$$</p>
+<p>我们将$(3-3)$代入$(3-4)$可以得出拉格朗日乘子：<br>$$\mathbf{\lambda} = \frac{C(\mathbf{p})}{ \nabla \mathbf{C}^{T} \mathbf{M}^{-1} \nabla \mathbf{C}} = \frac{\mathbf{C}(\mathbf{p})}{\sum_{b\in A} w_{b} |\nabla _{b} \mathbf{C}|^{2} }$$<br>然后将拉格朗日乘子代入到式子$(3-3)$中，可以得到约束对位置的修正：<br>$$\Delta \mathbf{p}_{a} = (w_{a} \nabla _{a} \mathbf{C}) (\sum_{b\in A} w_{b} \nabla _{b} \mathbf{C}^{T} \nabla _{b}\mathbf{C})^{-1} \mathbf{C}. \tag{3-5}$$</p>
+<h1 id="PBD-优化角度的解释"><a href="#PBD-优化角度的解释" class="headerlink" title="PBD 优化角度的解释"></a>PBD 优化角度的解释</h1><p>在NVIDIA 2014年出的Flex物理引擎的论文里，作者 Miles Macklin等人有对PBD优化角度的解释。具体论文在<a target="_blank" rel="noopener" href="http://mmacklin.com/uppfrta_preprint.pdf">这里</a>。<br>从优化的角度来看，PBD就是一个有约束的优化问题。本节讨论的其实跟上一章节是一样的内容。<br>假设只有等式约束，质点的运动问题其实就是下面的问题：<br>$$ \min \quad \frac{1}{2} \Delta \mathbf{x}^{T} \mathbf{M} \Delta \mathbf{x},\\<br> \textrm{subject to} \quad  C_{i}(\mathbf{x} + \Delta \mathbf{x})  = 0, i = 1,2,\cdots,m. \tag{4-1}$$</p>
+<p>如果约束是线性的，那么$(4-1)$就是一个二次规划问题(QP)，并且有封闭解(closed form solution)，也叫解析解。在现实当中，如前面所讲，约束类型复杂多样。所以全局最优的解可能就不存在。 PBD的灵感来源于 序列二次规划(Sequential Quadratic Programming, SQP)，它将约束线性化，然后求解一系列的局部约束二次最小问题。<br>$$ \min \quad \frac{1}{2} \Delta \mathbf{x}^{T} \mathbf{M} \Delta \mathbf{x},\\<br> \textrm{subject to} \quad  \mathbf{J} \Delta \mathbf{x} = \mathbf{b}. \tag{4-2}$$<br> 其中，$\mathbf{J} = \nabla C(x), \mathbf{b} = [-C_{1}, C_{2},\cdots,-C_{m}]^{T}. \tag{4-3}$。<br>问题$(4-3)$可以用拉格朗日法转换成下列求解公式（其实跟上节的方法一样）。<br>$$<br>\mathbf{M} \Delta \mathbf{x}  = \mathbf{J}^{T} \mathbf{\lambda}, \tag{4-4}<br>$$</p>
+<p>$$<br>\mathbf{J} \Delta \mathbf{x} = \mathbf{b}. \tag{4-5}<br>$$</p>
+<p>两个方程消去$\Delta \mathbf{x}$可以得到拉格朗日乘子:<br>$$<br>[\mathbf{J} \mathbf{M}^{-1} \mathbf{J}^{T}]\mathbf{\lambda} = \mathbf{b}. \tag{4-5}<br>$$<br>用式子$(4-5)$求出拉格朗日乘子，然后带入方程$(4-4)$当中其实就可以求出约束对位置的修正$\Delta \mathbf{x}$。这其实就是2007年的一篇文章使用的方法： <a target="_blank" rel="noopener" href="http://www.cs.columbia.edu/cg/pdfs/131-ESIC.pdf">fast projection method</a>.这篇文章也是从优化的角度来求解的，提出了两个概念：Implicit constraint direction (ICD) 和 Step and project (SAP)。其中SAP方法得出了上面说到的目标方程，ICD就是目标方程求梯度得出的方程，不过它是从隐式欧拉法出发得到的。</p>
+<p>但是PBD并不会直接构造出方程$(4-5)$左侧的矩阵，然后显示的求出拉格朗日乘子。 PBD使用的是<strong>高斯塞德尔</strong>(Gauss-Seidel)方法来迭代方程$(4-5)$，然后得出位置修正$\Delta \mathbf{x}$。 对于不等式约束，使用<strong>投影高斯赛德尔</strong>方法(Projected Gauss-Seidel)。</p>
+<blockquote>
+<p>高斯赛德尔的本质：对每个约束$C_{i}$单独的求出拉格朗日乘子，然后计算$C_{i}$对质子的位置更正。如果有$m$个约束的话，就从第1个约束到第$m$个约束依次求解。而每次第$i$次约束的求解都会用到前$i-1$次约束对质子位置更新后的结果。所以高斯赛德尔本质上是串行的，不适合并行计算。如果要提高并行性，可以结合雅克比(Jacobi)的方式进行求解：Projected Gauss-Jacobi。什么意思呢？就是每次分批串行，每个批次内是并行。比如说每次解10个约束，这10个约束是并行的，解完之后再用这10个约束的结果作为下面10个约束的输入。</p>
+</blockquote>
+<h1 id="XPBD"><a href="#XPBD" class="headerlink" title="XPBD"></a>XPBD</h1><p>在2016年<a target="_blank" rel="noopener" href="http://blog.mmacklin.com/about/">Miles Macklin</a>等人提出了<a href="7">eXtended Position based Dynamics</a>(XPBD)方法。这篇文章改进了什么呢？</p>
+<h2 id="PBD的缺陷"><a href="#PBD的缺陷" class="headerlink" title="PBD的缺陷"></a>PBD的缺陷</h2><ol>
+<li>能量不守恒，不是符合物理的方法。我们看之前的分析，从优化的角度看PBD的目标函数，它没有把质子的动能加到目标方程中，也就是说PBD方法把此刻当做一个准静态（Quasi-Static）来求解的。</li>
+<li>材料的刚度和迭代步数和timestep步长有关</li>
+</ol>
+<p>而PBD要解决的就是PBD的第二个缺陷。</p>
+<h2 id="XPBD推导"><a href="#XPBD推导" class="headerlink" title="XPBD推导"></a>XPBD推导</h2><p>从牛顿运动第二定律开始，一个物体受到的运动方程可以由下列方程给出：<br>$$<br>    \mathbf{M} \ddot{\mathbf{x}} = -\nabla U^{T}(\mathbf{x}). \tag{5-1}<br>$$<br>其中$\mathbf{x} = [x_{1},x_{2},\cdots,x_{n}]^{T}$是系统的状态（物体的位置，朝向等信息）。其中$\nabla$算子是偏导形成的<strong>行向量</strong>, $U(x)$位系统的势能。</p>
+<p>然后利用后向欧拉法对位置进行事件离散，然后带入到方程$(5-1)$中，可以得到：<br>$$<br>\mathbf{M} (\frac{\mathbf{x}^{n+1} - 2 \mathbf{x}^{n} + \mathbf{x}^{n-1}}{\Delta t^{2}}) = -\nabla U^{T}(\mathbf{x}^{n+1}). \tag{5-2}<br>$$</p>
+<p>XPBD利用约束$\mathbf{C} = [C_{1}(\mathbf{x}),C_{2}(\mathbf{x}), \cdots, C_{m}(\mathbf{x})]^{T}$来构建了势能$U(\mathbf{x})$:<br>$$<br>U(\mathbf{x}) = \frac{1}{2} \mathbf{C}(\mathbf{x})^{T} \alpha ^{-1} \mathbf{C}(\mathbf{x}). \tag{5-3}<br>$$<br>其中$\mathbf{\alpha}$为块对角柔度矩阵(block diagonal compliance matrix),其中柔度对应的是刚度的逆。<br>对势能求梯度就可以得到<strong>力</strong>：<br>$$<br>\mathbf{f}_{elastic} = -\nabla _{\mathbf{x}} U^{T} = -\nabla \mathbf{C}^{T} \mathbf{\alpha}^{-1} \mathbf{C}. \tag{5-4}<br>$$<br>将公式$(5-4)$带入到方程$(5-2)$中可以得到：<br>$$<br>\begin{align}<br>\mathbf{M} (\mathbf{x}^{n+1} - 2 \mathbf{x}^{n} + \mathbf{x}^{n-1}) &amp;= \Delta t^{2} \mathbf{f}_{elastic} \<br>&amp; = -\nabla \mathbf{C}^{T} (\frac{\mathbf{\alpha}}{\Delta t^{2}})^{-1} \mathbf{C}\<br>&amp; = -\nabla \mathbf{C}^{T} \tilde{\mathbf{\alpha}}^{-1} \mathbf{C}\<br>&amp; = \nabla \mathbf{C}^{T} \mathbf{\lambda}_{elastic}<br>\end{align}. \tag{5-5}<br>$$<br>其中$\mathbf{\lambda}_{elastic} = -\tilde{\mathbf{\alpha}}^{-1} \mathbf{C}(\mathbf{x})$ 为拉格朗日乘子。这一步就是<strong>XPBD的关键</strong>，因为拉格朗日乘子的计算考虑了时间的影响，所以最后仿真时候材料的刚度是和时间无关的。<br>方程$(5-5)$的右侧视为弹性力的话，弹性力就被分解为两部分：力的方向$\nabla \mathbf{C}^{T}$和力的大小$\mathbf{\lambda}_{elastic}$。</p>
+<p>由公式$(5-4)$和公式$(5-5)$可以得出系统方程为：<br>$$<br>\begin{align}<br>\mathbf{M} (\mathbf{x}^{n+1} - \tilde{\mathbf{x}}) - \nabla \mathbf{C}^{T}(\mathbf{x}^{n+1}) \mathbf{\lambda}^{n+1} &amp;= 0 \<br>\mathbf{C}(\mathbf{x}^{n+1}) + \tilde{\mathbf{\alpha}} \mathbf{\lambda}^{n+1}  &amp;=0. \tag{5-6}<br>\end{align}<br>$$<br>其中$\tilde{\mathbf{x}} = 2 \mathbf{x}^{n} - \mathbf{x}^{n-1} = \mathbf{x}^{n} + \Delta t \mathbf{v}^{n}$为初始位置。<br>用下列方程组来表示方程$(5-6)$<br>$$<br>\begin{align}<br>\mathbf{g}(\mathbf{x},\mathbf{\lambda}) &amp;= \mathbf{0} \<br>\mathbf{h}(\mathbf{x},\mathbf{\lambda}) &amp;= \mathbf{0}<br>\end{align}<br>$$。<br>为了解非线性方程组$(5-6)$可以使用很多种方法。XPBD用到的方法就是对非线性方程组线性化得到下列方程组：<br>$$<br>\begin{bmatrix}<br> \mathbf{K}                         &amp; -\nabla \mathbf{C}^{T}(\mathbf{x}_{i}) \\<br>-\nabla \mathbf{C}(\mathbf{x}_{i}) &amp; \tilde{\mathbf{\alpha}}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\Delta \mathbf{x} \\<br>\Delta \mathbf{\lambda}<br>\end{bmatrix}<br>= -<br>\begin{bmatrix}<br> \mathbf{g}(\mathbf{x}_{i}, \mathbf{\lambda}_{i})\\<br> \mathbf{h}(\mathbf{x}_{i}, \mathbf{\lambda}_{i})<br>\end{bmatrix}. \tag{5-7}<br>$$<br>得到系统方程之后，依然不好求，因为每次迭代，方程左侧的$\mathbf{K}$都要重新求一遍。<br><strong>XPBD做了两个简化</strong>：</p>
+<ol>
+<li>用质量矩阵$\mathbf{M}$代替刚度矩阵$\mathbf{K}$</li>
+<li>假设$\mathbf{g}(\mathbf{x}_{i}, \mathbf{\lambda}_{i}) = 0$</li>
+</ol>
+<p>此时我们才得到<strong>最终的系统方程</strong>：<br>$$<br>\begin{bmatrix}<br> \mathbf{M}                         &amp; -\nabla \mathbf{C}^{T}(\mathbf{x}_{i}) \\<br>-\nabla \mathbf{C}(\mathbf{x}_{i}) &amp; \tilde{\mathbf{\alpha}}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\Delta \mathbf{x} \\<br>\Delta \mathbf{\lambda}<br>\end{bmatrix}<br>= -<br>\begin{bmatrix}<br> \mathbf{0}\\<br> \mathbf{h}(\mathbf{x}_{i}, \mathbf{\lambda}_{i})<br>\end{bmatrix}. \tag{5-8}<br>$$<br>这时候，方程的左侧矩阵在仿真过程中都是不变的。</p>
+<p>最后要求方程$(5-8)$可以用关于质量矩阵$\mathbf{M}$的Schur complement来得到一个降维的系统，求出拉格朗日乘子的修正量$\Delta \mathbf{\lambda}$：<br>$$<br>[-\nabla \mathbf{C}(\mathbf{x}_{i}) \mathbf{M}^{-1}  -\nabla \mathbf{C}^{T}(\mathbf{x}_{i}) + \tilde{\mathbf{\alpha}}] \Delta \mathbf{\lambda} = -\mathbf{C}(\mathbf{x}_{i}) - \tilde{\mathbf{\alpha}} \mathbf{\lambda}_{i}. \tag{5-9}<br>$$<br>最后得出约束对位置的修正量$\Delta \mathbf{x}$:<br>$$<br>\Delta \mathbf{x} =  \mathbf{M}^{-1}   -\nabla \mathbf{C}^{T}(\mathbf{x}_{i}) \Delta \mathbf{\lambda}. \tag{5-10}<br>$$</p>
+<h1 id="Projetive-Dynamics"><a href="#Projetive-Dynamics" class="headerlink" title="Projetive Dynamics"></a>Projetive Dynamics</h1><p>2014年 <a target="_blank" rel="noopener" href="http://sofienbouaziz.com/">Sofien Bouaziz</a>， <a target="_blank" rel="noopener" href="http://tiantianliu.cn/">Tiantian Liu</a>等人发表的论文<a target="_blank" rel="noopener" href="http://tiantianliu.cn/papers/bouaziz14projective/bouaziz14projective.html">Projective Dynamics</a>里面有对PBD方法更深入的解析。<br>在XPBD章节，我们分析的时候，并没有考虑到外力的影响。在方程$(5-5)$中，我们用到的是：<br>$$<br>\mathbf{M} (\mathbf{x}^{n+1} - 2 \mathbf{x}^{n} + \mathbf{x}^{n-1}) = \Delta t^{2} \mathbf{f}_{elastic}(\mathbf{x}^{n+1})<br>$$<br>而在Projective Dynamics的分析中，他们得到的方程加入了外力：<br>$$<br>\mathbf{M} (\mathbf{x}^{n+1} - 2 \mathbf{x}^{n} + \mathbf{x}^{n-1}) = \Delta t^{2} (\mathbf{f}_{elastic}(\mathbf{x}^{n+1}) + f_{ext})<br>$$<br>然后他们把外力放在了方程的左侧，得到<br>$$<br>\begin{align}<br>\mathbf{M} (\mathbf{x}^{n+1} - 2 \mathbf{x}^{n} + \mathbf{x}^{n-1} - \Delta t^{2}\mathbf{M}^{-1} f_{ext}) &amp;= \Delta t^{2} \mathbf{f}_{elastic}(\mathbf{x}^{n+1}) \<br>\mathbf{M} (\mathbf{x}^{n+1} - \mathbf{s}_{n}) &amp;= \Delta t^{2} \mathbf{f}_{elastic}(\mathbf{x}^{n+1})<br>\end{align}. \tag{7-1}<br>$$</p>
+<p>然后作者得出了$(7-1)$的变分形式：<br>$$<br>\underset{\mathbf{x}^{n+1}} {\min} \frac{1}{2\Delta t^2} | \mathbf{M}^{1/2}(\mathbf{x}^{n+1} - \mathbf{s}_{n})|^{2}_{F} + \sum _{i} W_{i} (\mathbf{x}^{n+1}), \tag{7-2}<br>$$<br>公式$(7-2)$就是对一个物体运动的描述，可以分两部分来解读。</p>
+<ol>
+<li>$\frac{1}{2\Delta t^2} | \mathbf{M}^{1/2}(\mathbf{x}^{n+1} - \mathbf{s}_{n})|^{2}_{F}$可以看到是物体没有受到外力的运动得到的动量势能。</li>
+<li>$\sum _{i} W_{i} (\mathbf{x}^{n+1})$ 可以看做是物体的势能或者说内能。</li>
+</ol>
+<p><strong>物体的运动就是使得势能和动能的和最小的值的状态。</strong></p>
+<p>解非线性公式$(7-2)$就可以得到物体下一个状态。解法有很多，比如牛顿法，准牛顿法，ADMM等等。这也是后面的几篇论文用到的方法。<br>Projectives的方法是一种特殊的方法，它分为两个步骤：<strong>local step</strong>, <strong>global step</strong>。而且他的势能必须满足一定的格式（必须是二次的）。</p>
+<h2 id="解法分析"><a href="#解法分析" class="headerlink" title="解法分析"></a>解法分析</h2><p>Projective Dynamics创新的地方就是在势能部分加入了一个<strong>附加的变量</strong>。然后才能分成两个步骤来求目标函数$(7-2)$。</p>
+<h1 id="ADMM"><a href="#ADMM" class="headerlink" title="ADMM"></a>ADMM</h1><h1 id="Quastatic-Newton-Method"><a href="#Quastatic-Newton-Method" class="headerlink" title="Quastatic-Newton Method"></a>Quastatic-Newton Method</h1><h1 id="FERR"><a href="#FERR" class="headerlink" title="FERR"></a>FERR</h1>
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%89%A9%E7%90%86/" rel="tag">物理</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

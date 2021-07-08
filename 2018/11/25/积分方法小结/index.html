@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>积分方法小结 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理仿真>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">积分方法小结</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-11-25</span>
+  </div>
+  <div class="post-content">
+    <p>积分方法的一点笔记</p>
+<span id="more"></span>
+<h1 id="三种积分方法"><a href="#三种积分方法" class="headerlink" title="三种积分方法"></a>三种积分方法</h1><ol>
+<li>显示积分法</li>
+<li>半隐式积分法（symplectic integrator）</li>
+<li>隐式积分法</li>
+</ol>
+<h2 id="稳定性"><a href="#稳定性" class="headerlink" title="稳定性"></a>稳定性</h2><ul>
+<li>线性常微分方程的系统可以通过分析Ax=b中的A矩阵来判断系统是不是稳定的。具体操作是对A进行特征值分解，然后最大的特征值如果大于1那么系统就不稳定，如果小于1系统就收敛。</li>
+</ul>
+<ul>
+<li><p><strong>隐式中点法</strong>(<em>implicit midpoint method</em>)是半隐式方法中的一种，它能够保证线性常微分方程的无条件稳定。使用中点法来进行数值估计的稳定性和实际连续情况下真实解的稳定性相同，而且和时间步长（<em>timestep</em>）无关。但是，将这种方法应用到非线性的方程上就不能保证稳定性，隐式中点法需要满足一定的条件使得系统稳定。</p>
+</li>
+<li><p>很多时候为了达到数值稳定，人们都会减小时间步长。但这对于实时应用来说不现实，因为他们有时间限制。隐式中点法隐式中点法隐式中点法隐式中点法隐式中点法隐式中点法隐式中点法</p>
+</li>
+<li><p>另一种分析系统稳定性的方法是:<strong>观察系统能量的变化</strong>。比如：显示积分在仿真过程中就会不断的增加系统的能量，最后系统就崩溃了。而隐式积分会慢慢的减少系统的能量，效果就是系统有不正常的阻尼（artificial damping）。 所以使用隐式积分，系统是稳定的。总结来说呢：<strong>仿真过程中，系统的能量一直在一个数值以下，不会超过这个值，那么这个系统就是稳定的。</strong></p>
+</li>
+<li><p><strong>指数积分法</strong>(<em>exponential integrators</em>)。这种方法将常微分方程解析解的线性部分和数值解的非线性部分结合起来。虽然这种方法效率高，鲁棒性好，而且很适合分子动力学。但是并不能保证系统的稳定性（<strong>那为什么还说鲁棒？？</strong>），所以不适合实时仿真系统。</p>
+</li>
+<li><p><strong>Symplectic methods</strong>。这种方法能够差不多保证系统能量的稳定，仿真过程中，系统的能量在一个定值附近上下波动。但是要真的保证系统的稳定性，就需要很小的步长（<strong>此处有疑问？</strong>）。但一般情况下，仿真都是步长固定，这就不能保证系统的symplecticity,能量守恒，动量守恒。解决的方法就是使用可变时间步长，但这就是的这种方法不适合实时仿真系统。</p>
+</li>
+<li><p><strong>Generalized-α method</strong>。这种方法比较出名就是<strong>Newmark</strong>系列算法。用这种方法，系统能量变化就挺好。经常看到$Newmark-\beta$ 方法（symplectic method)，附带的参数是$\alpha=1/4$,$\gamma  = 1/2$。但是它这种方法的局限和symplectic方法一样，如果用定长timestep，那么就不能保证好的视觉效果。</p>
+</li>
+</ul>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>文件传输小窍门 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=tech>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">文件传输小窍门</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-06-05</span>
+  </div>
+  <div class="post-content">
+    <p>本文告诉大家如何用<code>python</code>在建立一个简单的web server来局域网里快速分享文件。</p>
+<span id="more"></span>
+
+<p>经常要在局域网里传输文件，一般都要用U盘来回拷贝，有时候U盘空间有限，速度也慢（一般40MB/s以下）。所以一直想有个什么方便的方法去复制文件。今天在v2ex看到一个<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/460479#reply58">帖子</a>就是讨论这个问题的，下面有人说用<code>Python</code>自带的<code>httpserver</code>来实现这个功能，所以我试了试，果然很强大啊，方便快捷(只需要安装Python,不需要配置)，速度超快（最高达100MB/s)。</p>
+<h1 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h1><p>下面说说具体的方法：</p>
+<ol>
+<li>首先安装<code>Python</code>，版本很重要。</li>
+<li>如果你安装的是2.x版本，那么在<code>cmd</code>(win+r,输入cmd,回车)敲入以下命令：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m SimpleHTTPServer </span><br></pre></td></tr></table></figure>
+如果你安装的是3.x版本，那么在<code>cmd</code>中敲入以下命令：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server </span><br></pre></td></tr></table></figure>
+就会出现：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/)</span><br></pre></td></tr></table></figure></li>
+<li>然后打开浏览器，在地址栏里面输入<code>http://localhost:8000/</code>就可以看到用户目录下的文件。</li>
+<li>如果你想其他人看到你的文件，或者下载你用户目录(<code>C:\Users\username\</code>)下的文件， 你可以在<code>cmd</code>中输入<code>ipconfig</code>查看自己的局域网IP地址。把你的IP地址告诉你的同事or朋友。他们就可以在浏览器的地址栏里输入<code>http://你的IP地址:8000/</code>，这样他们就可以浏览你的文件，并且按需下载了。</li>
+</ol>
+<h1 id="高端人士VIP功能"><a href="#高端人士VIP功能" class="headerlink" title="高端人士VIP功能"></a>高端人士VIP功能</h1><h2 id="更改默认端口"><a href="#更改默认端口" class="headerlink" title="更改默认端口"></a>更改默认端口</h2><p>上面我们看到，默认端口是<code>8000</code>。我们可以自己设定端口，比如我们想让它运行在端口<code>1234</code>上，可以这么做：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#python 2.x</span></span><br><span class="line">python -m SimpleHTTPServer <span class="number">1234</span></span><br><span class="line"><span class="comment"># python 3.x</span></span><br><span class="line">python -m http.server <span class="number">1234</span></span><br></pre></td></tr></table></figure>
+<h2 id="更改分享目录"><a href="#更改分享目录" class="headerlink" title="更改分享目录"></a>更改分享目录</h2><p>我们上面的方式使得我们分享的文件是用户目录下的文件。现在，我们不想分享这个目录，里面可能有很多秘密文件（你懂得）。这时候该怎么办呢？很简单。</p>
+<ol>
+<li>打开你想分享的文件所在目录</li>
+<li><code>Ctrl + Shift + 鼠标右键</code>，点击<code>在此处打开Powershell窗口(S)</code></li>
+<li>然后输入<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#python 2.x</span></span><br><span class="line">python -m SimpleHTTPServer </span><br><span class="line"><span class="comment"># python 3.x</span></span><br><span class="line">python -m http.server </span><br></pre></td></tr></table></figure></li>
+<li>接下来步骤同上。。。</li>
+</ol>
+<h1 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h1><p>其实上面命令的功能很简单，我们在自己的机器上建立了一个简单的web server，它就像Apache,Nginx,ISS等。当输入上面的指令之后，我们就启动了web server,如果我们的用户目录下面有个index.html，那么在浏览器中输入<code>http://localhost:8000/</code>就可以看到这个网页。如果没有呢，我们就可以看到用户目录下所有文件的列表。</p>
+<p><strong>参考文章</strong>：<br><a target="_blank" rel="noopener" href="https://coolshell.cn/articles/1480.html">非常简单的PYTHON HTTP服务</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/7943751/what-is-the-python-3-equivalent-of-python-m-simplehttpserver">What is the Python 3 equivalent of “python -m SimpleHTTPServer”
+</a><br><a target="_blank" rel="noopener" href="https://github.com/ghickman/classify/issues/16">ModuleNotFoundError: No module named ‘SimpleHTTPServer’</a></p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/tech/" rel="tag">tech</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

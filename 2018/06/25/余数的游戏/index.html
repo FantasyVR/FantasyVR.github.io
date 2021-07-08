@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>余数的游戏 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=math>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">余数的游戏</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-06-25</span>
+  </div>
+  <div class="post-content">
+    <p>今天玩了一个游戏，是一个魔术。识破的人可以必赢，看不破的人就会一直输。</p>
+<span id="more"></span>
+
+<h1 id="余数游"><a href="#余数游" class="headerlink" title="余数游"></a>余数游</h1><h2 id="游戏规则"><a href="#游戏规则" class="headerlink" title="游戏规则"></a>游戏规则</h2><p>两个小朋友小明和小红，他们两个玩起了数数的游戏。从 1 到 30 ，每个人最多可以数2个数。那么就看谁能数到 30 就算谁赢？</p>
+<p><strong>必赢的策略</strong><br>这个游戏谁先说谁就会输，比如小明开始从 1 开始数数，那么小红只要每次读到 $2+1 = 3$ 的倍数就停止，那么小红迟早会念到 30 。</p>
+<h2 id="变身"><a href="#变身" class="headerlink" title="变身"></a>变身</h2><p>这次我们把规则改一下：</p>
+<p>两个小朋友小明和小红，他们两个玩起了数数的游戏。从 1 到 30 ，每个人最多可以数 <strong>3</strong> 个数。那么就看谁能数到 30 就算谁赢？</p>
+<p><strong>必赢的策略</strong><br>这个游戏谁先说谁就会赢，比如小明开始从1开始数数，他只要第一次数到 $2 = 30 % 4$ 就可以停止，其中 $%$ 符号是求余符号。然后让小红接着数。然后小明每次总是可以在 $2+4x,x \in {1,2,3,…}$ 处停止，迟早小明就会念到 30 。</p>
+<h2 id="推而广之"><a href="#推而广之" class="headerlink" title="推而广之"></a>推而广之</h2><p>我们可以把这个游戏推广一下：</p>
+<p>两个小朋友小明和小红，他们两个玩起了数数的游戏。从 1 到 $m$ ，每个人最多可以数 $n$ 个数。那么就看谁能数到 $n$ 就算谁赢？</p>
+<p><strong>必赢的策略</strong></p>
+<ol>
+<li>如果 $ m % (n+1) == 0$ ,那么谁先说谁就输。</li>
+<li>如果 $ m % (n+1) == a$ ,那么谁先说谁就赢。只要首先说的那个人第一次从 1 数到 $a$ ，然后让另外一个人开始数数。然后首先说的那个人就可以在 $a + (n+1)x, x \in {1,2,3,…}$ 处停止。</li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/math/" rel="tag">math</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

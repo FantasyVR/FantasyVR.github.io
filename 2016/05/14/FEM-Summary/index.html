@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>FEM-Summary - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=FEM>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">FEM-Summary</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-05-14</span>
+  </div>
+  <div class="post-content">
+    <p>FEM simulation of 3D Deformable Solids. 这里主要是对FEM在三维物体变形的一个简单的介绍。</p>
+<span id="more"></span>
+
+<h1 id="三维空间里的弹性物体"><a href="#三维空间里的弹性物体" class="headerlink" title="三维空间里的弹性物体"></a>三维空间里的弹性物体</h1><p>在这个章节主要关注三维空间里的弹性物体如何变形，并讨论如何对变形物体和力进行数学量化表示。</p>
+<h2 id="变形映射和变形梯度"><a href="#变形映射和变形梯度" class="headerlink" title="变形映射和变形梯度"></a>变形映射和变形梯度</h2><p>首先，描述一个物体要放在一个特定的坐标系中。用$\Omega$表示物体，未变形状态称为<code>reference configuration</code>(或者<code>undeformed configuration</code>)。<br>用$\overrightarrow{X}\in \Omega$来表示物体$\Omega$的未变形状态时的一个顶点。当物体$\Omega$受力变形之后，每一个$\overrightarrow{X}$都会发生位移到新的位置$\overrightarrow{x}$。用<code>变形映射</code>来表示物体变形前后之间的关系$\overrightarrow{\phi}:R^{3}\rightarrow R^{3}$,它将每个点$\overrightarrow{X}$映射到对应的变形位置$\overrightarrow{x}=\overrightarrow{\phi}(\overrightarrow{x})$。</p>
+<p><img src="/image/deformation_mapping.png" alt="deformation map"></p>
+<p>从变形映射直接得出的一个重要的物体量就是<code>变形梯度张量</code>$F\in R^{3\times 3}$。如果$\overrightarrow{X}=(X_{1},X_{2},X_{3})^{T}$，$\overrightarrow{\phi}(\overrightarrow{X})=(\phi_{1}(\overrightarrow{X}),\phi_{2}(\overrightarrow{X}),\phi_{3}(\overrightarrow{X}))^{T}$,那么变形梯度就为<br>$$F = \frac{\partial{(\phi_{1},\phi_{2},\phi_{3})}}{\partial{(X_{1},X_{2},X_{3})}}=<br>\begin{pmatrix}<br> \partial\phi_{1}/\partial{X_{1}} &amp; \partial\phi_{1}/\partial{X_{2}} &amp;\partial\phi_{1}/\partial{X_{3}}\<br> \partial\phi_{2}/\partial{X_{1}} &amp; \partial\phi_{2}/\partial{X_{2}} &amp; \partial\phi_{2}/\partial{X_{3}}\<br> \partial\phi_{3}/\partial{X_{1}} &amp; \partial\phi_{3}/\partial{X_{2}} &amp; \partial\phi_{3}/\partial{X_{3}}<br>\end{pmatrix}<br>$$<br>或者用<em>下标标记法</em> $F_{ij}=\phi_{i,j}$。从上面就知道 $F$其实就是<code>变形映射</code>的<strong>Jacobian</strong>矩阵。需要注意的是，通常情况下$F$会随着时间变化。</p>
+<blockquote>
+<p>对变形梯度的简单解释<br>    <img src="/image/deformation_demo.png" alt="Figure 2.1"><br>    如上图(a),表示的是物体在空间只进行平移，形状并没有任何改变。<br>        $$\overrightarrow{x}=\phi_{(\overrightarrow{X})}=\overrightarrow{X}+\overrightarrow{t},\quad F=\partial\phi_{\overrightarrow{X}}/\partial{\overrightarrow{X}}=I$$<br>    如上图(b),表示的是物体扩大了$\gamma$倍。<br>        $$\phi_{\overrightarrow{X}}=\gamma\overrightarrow{X},\quad F = \gamma I$$<br>    如上图(c)，物体在水平方向缩小0.7倍，垂直方向放大了2倍。<br>        $$\begin{pmatrix}x\\ y \end{pmatrix}=\phi\begin{pmatrix}X\\ Y \end{pmatrix}=\begin{pmatrix}0.7X\\ 2Y \end{pmatrix}, \quad F=\begin{pmatrix}0.7 &amp; 0\\ 0 &amp; 2 \end{pmatrix}$$<br>    如上图(d),物体关于原点逆时针旋转了$45^{0}$<br>        $$<br>        \begin{pmatrix}<br>        x\<br>        y<br>        \end{pmatrix}=<br>        \begin{pmatrix}<br>        cos45^{0}  &amp; -sin45^{0}\<br>        sin45^{0}  &amp; cos45^{0}<br>        \end{pmatrix}<br>        \begin{pmatrix}<br>        X\<br>        Y<br>        \end{pmatrix}, \quad \quad<br>        F= \begin{pmatrix}<br>        cos45^{0}  &amp; -sin45^{0}\<br>        sin45^{0}  &amp; cos45^{0}<br>        \end{pmatrix}$$</p>
+</blockquote>
+<h2 id="应变能和超弹性"><a href="#应变能和超弹性" class="headerlink" title="应变能和超弹性"></a>应变能和超弹性</h2><p>一系列的变形之后，就会导致变形物体势能(potential energy)的积累，在变形体上下文中也即是<code>应变能</code>(strain energy)。用$E[\phi]$来表示应变能，也就说应变能完全由给定状态的变形映射决定。这里有个假设：物体变形产生的应变能只与变形初始和结束状态有关，与变形过程中的路径无关。也就说，不管你中间怎么着，我不管；我只看起点与终点物体的状态。这种与之前的变形历史无关的特性是<code>超弹性</code>(hyperelastic)材料的特性。这种特性与超弹性材料弹性力的保守性紧密相关。</p>
+<blockquote>
+<p>保守性：变形路径上由弹性内力做的功只依赖于初始状态和最终状态，而与路径无关。这与高中物理重力做功形式，重力对物体做的功只与物体的初始位置与最终位置有关，而与物体中间行走的路径无关。所以重力场是一种保守场。</p>
+</blockquote>
+<p>受力变形的物体不同部分的变形程度是不同的。所以，变形与应变能之间的关系应该定义在局部区域上。这也就引入了<code>能量密度函数</code>(energy density function) $\Psi[\phi;\overrightarrow{X}]$,它表示的是顶点$\overrightarrow{X}$附近无穷小区域$dV$上每个单元未变形体积(per unit undeformed volume)的应变能。那么$\Omega$域上的应变能可以通过能量密度函数积分得到：<br>$$E[\phi]=\int _{\Omega} \Psi[\phi;\overrightarrow{X}]d\overrightarrow{X}$$</p>
+<p>在特定的位置$\overrightarrow{X}_{*}$，因为$\Psi[\phi;\overrightarrow{X}_{*}]$反应的是$\overrightarrow{X}_{*}$附近无穷小区域的变形。所以我们可以用一阶泰勒扩展式来估计这一小块区域的变形映射。<br>$$\phi(\overrightarrow{X})\approx \frac{\partial{\phi}}{\overrightarrow{X}_{*}}\mid_{\overrightarrow{X}_{*}}(\overrightarrow{X}-\overrightarrow{X}_{*}) = \overrightarrow{x}_{*} + F(\overrightarrow{X}_{*})(\overrightarrow{X}-\overrightarrow{X}_{*}) =F_{*}\overrightarrow{X}+\overrightarrow{t}$$<br>其中$F_{*}=F(\overrightarrow {X}_{*}) * X $, $\overrightarrow{t}=\overrightarrow{x}_{*}-F(\overrightarrow{X}_{*}) \overrightarrow{X}_{*}$<br>这个方程表明$\Psi[\phi;\overrightarrow{X}_{*}]$应该是$F_{*}$和$\overrightarrow{t}$的函数。更进一步，我们可以认为向量$\overrightarrow{t}$的值在这个式子中是无关的：这个参数的不同值表示的是不同的常量位移，因此它产生的效果不改变物体形状和应变能。</p>
+<p><strong>综上</strong>：应变能密度函数可以表示为：<br>    $$\Psi[\phi;\overrightarrow{X}_{*}]=\Psi(F(\overrightarrow{X}_{*}))$$<br>它只与局部变形梯度有关。</p>
+<p>但是，现在我们并没有给出应变能密度函数的具体表达形式。它与具体的材料属性有关，后面会讲不同材料的应变能密度函数怎么求，并推出相应材料的具体应变能密度函数的表达式。</p>
+<h2 id="力和牵引力"><a href="#力和牵引力" class="headerlink" title="力和牵引力"></a>力和牵引力</h2><p>接下来要讲的一个物理量是物体发生形变时产生的<em>弹性力</em>。<br>First:<br>举个栗子：一个质点(只有质量，没有体积)在保守场内运动，假设保守场就是重力场。质点在$\overrightarrow{x}=(x,y,z)$有势能$E(\overrightarrow(x))=m\overrightarrow{G}\overrightarrow{x}=mgz,\quad \quad \overrightarrow{G}=(0,0,g)$，是重力加速度($z-axis$为垂直方向)。此时可以得到重力就是质点在位置$\overrightarrow{x}$处势能梯度的负方向<br>$$\overrightarrow{f} =-\frac{\partial E(\overrightarrow(x))}{\partial \overrightarrow{x}}=(0,0,-mg)$$</p>
+<p>Then:<br>我们也想可变性物体中力和能量之间这种关系，但是在对变形物体<em>离散化</em>之前，我们认为它是连续分布的，而不是一系列独立的质点的集合。所以使用<code>内力密度</code>$\overrightarrow{f}(\overrightarrow{X})$表示点$\overrightarrow{X}$附近无穷小区域内每单元体积受到的<em>力</em>(force per unit undeformed volume)。此时，有限区域$A\in \Omega$上的力的总和可以由积分获得。<br>$$\overrightarrow{f}_{aggregate}(A)=\int _{A} \overrightarrow{f}(\overrightarrow{X})d\overrightarrow{X}$$</p>
+<p>However:<br>上述方法并不适合表示施加在可变性物体边界($\partial \Omega$)上的力。假设一个弹性体被挤压(e.g. $\phi(\overrightarrow{X}=\alpha \overrightarrow{X},\quad \alpha&lt;1$)。那么弹性体表面$S\subset \partial \Omega$应该会有一个恢复力(restorative force)来反推造成挤压的物体。同样，定义<code>牵引力</code>(traction)$\overrightarrow\tau (\overrightarrow{X})$为表面力密度函数。用它来表示物体表面上$\overrightarrow{X}$附近无穷小区域单位面积力(force per unit undeformed area)。那么，有限表面区域$B\subset \partial \Omega$上力的总和可以由积分获得。<br>$$\overrightarrow{f}_{aggregate}(B)=\oint _{B} \overrightarrow\tau (\overrightarrow{X})dS$$</p>
+<h2 id="The-First-Piola-Kirchhoff-应力张量"><a href="#The-First-Piola-Kirchhoff-应力张量" class="headerlink" title="The First Piola-Kirchhoff 应力张量"></a>The First Piola-Kirchhoff 应力张量</h2><p>内力密度与表面牵引力的不同表明:他们中任何一个都不能很好的描述弹性体所有方面的弹性响应性质。但是，这两种力都可以引出一种基本的力描述符：<code>应力张量</code>(Stress Tensor)。其实，有很多种”应力”描述符。但我们只讨论 <em>1st Piola-Kirchhoff stress tensor</em> $P$,它是一个$3 \times 3$的矩阵，它有如下性质：</p>
+<ul>
+<li>表面位置$\overrightarrow{X} \in \partial\Omega$的内部牵引力为<br>$$\overrightarrow\tau (\overrightarrow{X}) = -P \cdot \overrightarrow{N}$$<br>$\overrightarrow{N}$是未变形状态表面单位法向，方向向外。<br>由上可得应力张量$P$的定义：对于变形体内任一点$\overrightarrow{X} \in \Omega \setminus \partial\Omega$,可以假设将物体一刀切开，切的轨迹经过$\overrightarrow{X}$并且与$\overrightarrow{N}$相互垂直。那么，$P$就是一个与$\overrightarrow\tau,\overrightarrow{N}$有关如上式的一个矩阵。</li>
+<li>由$P$可以得出内力密度函数<br>  $$\overrightarrow{f}(\overrightarrow{X})=div_{\overrightarrow{X}}P(\overrightarrow{X})$$<br>  或者下标形式$$f_{i}=\sum_{j=1}^{3}P_{ij,j}=\frac{\partial P_{i1} }{\partial X_{1}}+\frac{\partial P_{i2} }{\partial X_{2}}+\frac{\partial P_{i3} }{\partial X_{3}}$$</li>
+<li>对于超弹性材料，$P$仅仅是关于变形梯度的函数，并且与应变能之间的关系很简单：<br>$$P(F)=\frac {\partial \Psi(F)}{\partial F}$$</li>
+</ul>
+<p>如上所述，由<em>1st Piola-Kirchhoff stress tensor</em>可以表示内力(force)和张力(tension)。而且可以很简单从应变能密度函数求得。</p>
+<p>有两种(等价)方法表示超弹性材料的材料属性：<br>(a) 显示方法：以$F$为参数的$\Psi$<br>(b) 隐式方法：以$F$为参数的$P$</p>
+<p>下面谈论的所有材料，我们都会给出两种这两种方式的表示方法。</p>
+<hr>
+<h1 id="材料的本构模型"><a href="#材料的本构模型" class="headerlink" title="材料的本构模型"></a>材料的本构模型</h1><p>在一个部分，主要介绍在仿真领域内比较流行的一些材料，并展示如何表示各种材料的物理属性,<code>本构模型</code>(给定材料物理属性的数学描述)和特定刺激(e.g. 变形)下材料的反应方程(比如：力，应力，能量)。<br>如前面所讲，每个本构方程有两种表现形式：<br>(a) Piola 应力 $P$ 关于变形梯度$F$的函数的表示形式<br>(b) 能量密度函数$\Psi$ 关于变形梯度$F$ 的函数的表示形式<br>为了简单，我们讨论<code>各向同性</code>(isotropic)材料。</p>
+<blockquote>
+<p>各种同性材料：弹性物体对于变形的反应与变形的方向无关。</p>
+</blockquote>
+<h2 id="应变度量-Strain-measures"><a href="#应变度量-Strain-measures" class="headerlink" title="应变度量(Strain measures)"></a>应变度量(Strain measures)</h2><p>原则上来说，直接用$F$和$\Psi$(或$F$和$P$)表示本构方程就足够了。但是呢，这种方式并不直观。所以引入了从$F$得出的一个中间物理属性，比如：<code>应变度量</code>(strain measures)或者<code>不变量</code>(invariants)。</p>
+<p><code>应变度量</code>是对变形程度的定量描述符。所以，虽然应变度量是从变形梯度得来，但是还能获得变形程度的信息。<br><code>Green Strain tensor</code> $E \in R^{3\times 3}$：<br>$$E=\frac{1}{2}(F^{T}F-I)$$</p>
+<p>当弹性体为未变形状态的时候：比如$\overrightarrow{\phi}(\overrightarrow{X})=\overrightarrow{X}\quad \rightarrow \quad F=I \rightarrow \quad E=0$。<br>当弹性物体仅仅旋转和平移的时候：$\overrightarrow{\phi}(\overrightarrow{X})=R\overrightarrow{X}+\overrightarrow{t}\quad$(R为旋转矩阵)。那么$F=R\quad \rightarrow E=0$因为$R^{T}R=I$<br>一般情况：变形梯度可以进行<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Polar_decomposition">极分解</a>,$F=RS$,$R$为旋转矩阵，$S$为半正定对称矩阵。三维旋转阵$R$包含3个自由度，$S$有6个独立自由度。此时<br>$$E=\frac{1}{2}[(RS)^{T}(RS)-I]=\frac{1}{2}(S^{2}-I)$$<br>上面的式子是非线性(二次)函数，增加了本构模型的复杂度，也会导致离散化节点力(nodal forces)和节点位置(nodal positions)时候的非线性问题。为了解决非线性问题，通过泰勒展开式在$F+I$处，对$E$进行了线性化估计。<br>$$E(F)\approx E(I)+\frac{\partial E}{\partial F} \mid_{F=I} :(F-I)$$<br>其中$E(I)=0$,用$\delta E$计算微分$\partial E / \partial F$<br>$$\frac{\partial E}{\partial F}:\delta F = \delta E = \frac{1}{2}(\delta F^{T}+F^{T}\delta F)$$<br>所以在$F=I$时：<br>$$\frac{\partial E}{\partial F} \mid_{F=I} :(F-I)=\frac{1}{2}[(F-I)^{T}I-I^{T}(F-I)]=\frac{1}{2}(F+F^{T})-I$$<br>由此，得到对$E(F)$的线性估计:<code>小应变张量</code>(small strain tensor)或者无穷下应变张量(infinitesimal strain tensor)表示为$\varepsilon$:<br>$$\varepsilon = \frac{1}{2}(F+F^{T})-I$$</p>
+<p><strong>优势</strong>： 离散化后的节点力和节点位置之间的映射是线性的。<br><strong>局限</strong>：只能应用于小变形，不能用于表示大变形。</p>
+<h2 id="线性弹性-Linear-Elasticity"><a href="#线性弹性-Linear-Elasticity" class="headerlink" title="线性弹性(Linear Elasticity)"></a>线性弹性(Linear Elasticity)</h2><p>最简单的本构模型就是线弹性(Linear Elasticity)模型,对应的应变能密度函数为：<br>$$\Psi(F) = \mu \varepsilon: \varepsilon + \frac{\lambda}{2}tr^{2}(\varepsilon)$$<br>其中$\varepsilon$为小应变张量，$\mu$和$\lambda$为$Lam\acute{e} coefficients$，都是材料的属性<code>Young&#39;s modulus</code>$k$和<code>Poisson&#39;s ratios</code>$v$有关。</p>
+<p>$$\mu = \frac{k}{2(1+v)},\quad \quad \lambda = \frac{kv}{(1+v)(1-2v)}$$</p>
+<p>the Piola stress $P$ 和 $F$ 之间的关系：<br>$$P(F) = \mu(F+F^{T}-2I)+ \lambda tr(F-I)I$$</p>
+<p>该模型的<strong>缺点</strong>：只能用于对小形变的建模，不使用于大型变。在有大形变的情况下，会产生体积膨胀的现象。</p>
+<h2 id="St-Venant-Kirchhoff-model"><a href="#St-Venant-Kirchhoff-model" class="headerlink" title="St. Venant-Kirchhoff model"></a>St. Venant-Kirchhoff model</h2><p>不再使用对Green strain的线性估计进行计算,而是使用非线性Green-Lagrange应变$E=\frac {1}{2}(F^{T}F-I)$,这样做可以消除大旋转(large rotation)带来的缺陷。<br>$$\Psi(F) = \mu E: E + \frac{\lambda}{2}tr^{2}(E)\<br>P(F)=F[2\mu E + \lambda tr(E) I]$$<br>StVK的弹性能量函数是四次(4阶)多项式。因此，内力和刚度矩阵分别是三次和二次多项式。</p>
+<p>StVK可能是最简单的非线性模型了，因为它使用一个线性映射来对stress-strain关系进行建模。不像一般的线性材料可能产生的各向异性(anisotropic)问题，StVK是各向同性(isotropic)的，所以也称StVK为几何各向同性的非线性材料模型(isotropic geometrically nonlinear material model)。</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>积分可以在预处理时进行</li>
+<li>多项式系数的存储只需要少量存储空间</li>
+<li>内力是三次多项式，可以计算出内力之后求出其一阶导数(刚度矩阵）和二阶导数(Hessian of the internal forces)。这些高阶导数在优化和控制变形过程中很重要</li>
+<li>三次的内力在model reduction的时候很有用</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>在大挤压情况下，材料会塌陷甚至翻转</li>
+<li>耗时</li>
+</ul>
+<h2 id="Corotated-Linear-Elasticity"><a href="#Corotated-Linear-Elasticity" class="headerlink" title="Corotated Linear Elasticity"></a>Corotated Linear Elasticity</h2><p>极分解之后$F=RS$，由此得出的新的应变度量为$\varepsilon_{c} = S-I$，只是线性依赖于对称张量$S$,而与旋转成分$F$无关。<br>此时：<br>$$\Psi(F) = \mu \varepsilon_{c}: \varepsilon_{c} + \frac{\lambda}{2}tr^{2}(E)=\mu \left | S-I \right | _{F}^{2} +(\lambda/2)tr^{2}(S-I)$$</p>
+<p>$$P(F)=F[2\mu \varepsilon_{c} + \lambda tr(\varepsilon_{c}) I] = 2\mu (F-R)+\lambda tr(R^{T}F-I)R$$</p>
+<h2 id="各向同性材料和不变量"><a href="#各向同性材料和不变量" class="headerlink" title="各向同性材料和不变量"></a>各向同性材料和不变量</h2><h2 id="Neohookean-Elasticity"><a href="#Neohookean-Elasticity" class="headerlink" title="Neohookean Elasticity"></a>Neohookean Elasticity</h2>
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/FEM/" rel="tag">FEM</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

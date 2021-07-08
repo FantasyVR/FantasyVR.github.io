@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>GLFW--Getting Started - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=tech>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">GLFW--Getting Started</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-05-11</span>
+  </div>
+  <div class="post-content">
+    <p>这篇文章是GLFW使用的简介。算是翻译吧：原文在<a target="_blank" rel="noopener" href="http://www.glfw.org/docs/latest/quick.html">here</a></p>
+<span id="more"></span>
+
+
+<hr>
+<h1 id="Step-by-step"><a href="#Step-by-step" class="headerlink" title="Step by step"></a>Step by step</h1><h2 id="包含头文件"><a href="#包含头文件" class="headerlink" title="包含头文件"></a>包含头文件</h2><p>在使用OpenGL或GLFW工程源文件里需要包含GLFW3头文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;GLFW/glfw3.h&gt;</span><br></pre></td></tr></table></figure>
+<p>这个头文件中定义了GLFW API所有的常量，类型和函数原型，同时也包含了OpenGL头文件并定义了在本系统平台上需要用到的所有常量和类型。</p>
+<p>例如：在windows平台下，通常要求在<code>GL/gl.h</code>之前包含<code>windows.h</code>，这使得源文件与Windows绑定在一起，同时会将整个<code>Win32 API</code>与代码空间混淆。</p>
+<p>然后，其实不用包含<code>windows.h</code>,GLFW头文件就会处理这些问题。GLFW并不是简单的复制<code>windows.h</code>文件，而是使用它的一部分而已。所以，当在源文件里包含了<code>windows.h</code>的时候，GLFW头文件就不会试着去重定义那些符号了(those symbols)。</p>
+<p>也就是说：</p>
+<ul>
+<li>不要包含OpenGL头文件，GLFW会为你包含的</li>
+<li>不要包含<code>windows.h</code>头文件或者与系统相关的头文件，除非你想直接使用这些API。</li>
+<li>如果确实需要包含这些头文件，那么要在GLFW之前把他们包含进去，以便能先检测到这些头文件。</li>
+</ul>
+<p>从3.0版本开始，GLU头文件glu.h就不再是默认包含了。如果要使用，需要在GLFW头文件之前定义<code>GLFW_INCLUDE_GLU</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#definne GLFW_INCLUDE_GLU</span><br><span class="line">#include &lt;GLFW/glfw3.h&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="初始化和终止GLFW"><a href="#初始化和终止GLFW" class="headerlink" title="初始化和终止GLFW"></a>初始化和终止GLFW</h2><p>在使用GLFW之前要对其进行初始化，初始化成功返回<code>GL_TRUE</code>，如果有错误则返回<code>GL_FALSE</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if(!glfwInit())</span><br><span class="line">  exit(EXIT_FAILURE);</span><br></pre></td></tr></table></figure>
+<p>GLFW使用完成之后，在应用退出之前要终止GLFW</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwTerminate();</span><br></pre></td></tr></table></figure>
+<h2 id="设置错误回调函数-error-callback"><a href="#设置错误回调函数-error-callback" class="headerlink" title="设置错误回调函数(error callback)"></a>设置错误回调函数(error callback)</h2><p>大多数事件是由回调报告，比如某个键是否按下，GLFW窗口是否被移动，错误是否产生。回调(Callback)是简单地C函数（或者C++静态方法）。这些回调由带有描述事件的参数的GLFW调用。</p>
+<p>如果GLFW函数调用失败，那么错误就会报告给GLFW的粗无回调函数(error callback)。你可以收到带有错误回调的报告。函数必须要有如下的签名(signature)。这个简单的错误回调函数只是简单的把错误描述打印到stderr。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">void error_callback(int error, const char *description)</span><br><span class="line">&#123;</span><br><span class="line">  fputs(description, stderr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>必须设置回调函数，这样GLFW才能调用他们。错误回调函数是GLFW函数初始化之前要调用的函数的一部分，这样在初始化时和初始化之后显示出错误。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwSetErrorCallback(error_callback);</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建窗口和上下文-Context"><a href="#创建窗口和上下文-Context" class="headerlink" title="创建窗口和上下文(Context)"></a>创建窗口和上下文(Context)</h2><p>利用一个调用就可以创建一个窗口和它的上下文，并返回一个句柄(Handle)。例如，如下创建一个640x480的窗口和OpenGL 上下文</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GLFWwindow *window = glfwCreateWindow(640, 480, &quot;My Title&quot;, NULL, NULL);</span><br></pre></td></tr></table></figure>
+<p>如果窗口和上下文创建失败就返回NULL，所以要检测其返回值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if(!window)</span><br><span class="line">&#123;</span><br><span class="line">  glfwTerminate();</span><br><span class="line">  exit(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>窗口句柄会传递给所有与window相关的函数和所有与window相关的调用，这样就可以决定哪个window接受消息。</p>
+<p>当不需要窗口是，就销毁它。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwDestoryWindow(window);</span><br></pre></td></tr></table></figure>
+<h2 id="设置OpenGL的上下文"><a href="#设置OpenGL的上下文" class="headerlink" title="设置OpenGL的上下文"></a>设置OpenGL的上下文</h2><p>在使用OpenGL API之前，必须设置OpenGL上下文环境。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwMakeContextCurrent(window);</span><br></pre></td></tr></table></figure>
+<h1 id="检测窗口关闭标志"><a href="#检测窗口关闭标志" class="headerlink" title="检测窗口关闭标志"></a>检测窗口关闭标志</h1><p>每个窗口都有标志指示一个窗口是否应该关闭。</p>
+<p>当用户试图关闭窗口(不管是点击标题栏上的关闭部件还是使用混合键<code>Alt+F4</code>)，这个标志就会置1。注意：<strong>此时窗口并没有真正关闭</strong>，所以要检测这个标志或者由这个标志销毁窗口或者给用户一些反馈信息。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(!<span class="built_in">glfwWindowShouldClose</span>(window))</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">//keep running</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当用户要关闭窗口时可以通过glfwSetWindowCloseCallBack设置一个关闭回调函数(Close Callback)来通知用户。当关闭标志置1时立刻调用关闭回调函数。</p>
+<h2 id="接收输入事件"><a href="#接收输入事件" class="headerlink" title="接收输入事件"></a>接收输入事件</h2><p>每个窗口都有很多回调函数用来接收各种各样事件。为了接收键盘按键和释放的事件，可以创建一个按键回调函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">key_callback</span><span class="params">(GLFWwindow *window, <span class="keyword">int</span> key, <span class="keyword">int</span> scancode, <span class="keyword">int</span> action, <span class="keyword">int</span> mods)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(key == GLFW_KEY_ESCAPE &amp;&amp; action == GLFW_PRESS)</span><br><span class="line">         <span class="built_in">glfwSetWindowShouldClose</span>(window, GL_TRUE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同其他窗口相关的调用一样，每个窗口都有对应按键回调函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwSetKeyCallback(window, key_callback);</span><br></pre></td></tr></table></figure>
+<p>当事件产生时，为了事件回调函数能够被调用，应该按如下方法处理事件。</p>
+<h3 id="与OpenGL一起渲染"><a href="#与OpenGL一起渲染" class="headerlink" title="与OpenGL一起渲染"></a>与OpenGL一起渲染</h3><p>当有了OpenGL上下文环境之后，就可以正常的使用OpenGL了。在这个教程里，将会绘制一个多颜色的三角形。为了使用<code>glViewport</code>要获取帧缓冲区的大小</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> width, height;</span><br><span class="line"><span class="built_in">glfwGetFramebufferSize</span>(window, &amp;width, &amp;height);</span><br><span class="line"><span class="built_in">glViewport</span>(<span class="number">0</span>,<span class="number">0</span>, width, height);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="读计时器"><a href="#读计时器" class="headerlink" title="读计时器"></a>读计时器</h3><p>为了创建平滑的动画，需要time source. GLFW 提供一个计时器可以返回开始初始化到当前的时间间隔。time source 是系统最精确的通常是毫秒或者是微妙。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> time = <span class="built_in">glfwGetTime</span>();</span><br></pre></td></tr></table></figure>
+
+<h3 id="交换缓冲区-Swapping-buffers"><a href="#交换缓冲区-Swapping-buffers" class="headerlink" title="交换缓冲区(Swapping buffers)"></a>交换缓冲区(Swapping buffers)</h3><p>GLFW默认使用双缓冲区，这表示每个窗口都有两个渲染缓冲区：前缓冲区和后缓冲区；前缓冲区是正在绘制的缓冲区，后缓冲区是等待绘制的缓冲区。<br>当一个帧绘制完成后，两个缓冲区需要交换，此时后缓冲区变为前缓冲区，反之亦然。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwSwaBuffers(window);</span><br></pre></td></tr></table></figure>
+<p>交换间隔是指要交换两个缓冲区之间的帧数，即<code>vsync</code>。默认情况下，交换间隔为0，即交换会立刻进行。在很快的一些机器上，不会看到这些帧，因为屏幕始终以60-70/s的速度更新，这会浪费很多CPU或GPU周期。</p>
+<p>同样，因为缓冲区交换发生在屏幕更新中间，就会造成屏幕撕裂问题<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Screen_tearing">screen tearing</a></p>
+<p>由于这个原因，应用通常会把交换间隔设置为1。也可以设置更高的值，但是通常不建议这样，因为这会导致输入延迟。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">glfwSwapInterval</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="处理事件"><a href="#处理事件" class="headerlink" title="处理事件"></a>处理事件</h3><p>GLFW需要和窗口系统经常交流，为了接收事件和显示应用没有锁住。在有可见窗口时必须进行事件处理，通常在每帧缓冲区交换后。</p>
+<p>有两种方法处理挂起事件(pending event):轮询(polling)和等待(waiting)。这个例子将会使用轮询，即仅仅在已经接收到事件时处理并立即返回。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwPollEvents();</span><br></pre></td></tr></table></figure>
+<p>在连续绘制时这是最好的选择，大多数游戏也是这样做的。如果你仅仅在接收到新的输入时需要这样做，那么<code>glfwWaitEvents</code>是个更好的选择。它等待至少接收到一个事件，将线程设置为休眠状态，并处理所有接收到的事件。这样做会节省大量的CPU周期，通常用于编辑工具。</p>
+<h2 id="总结Demo"><a href="#总结Demo" class="headerlink" title="总结Demo"></a>总结Demo</h2><p>现在，你已经知道了如何初始化GLFW、创建窗口并轮询键盘输入。此时，可以创建一个简单的程序。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;GLFW/glfw3.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">error_callback</span><span class="params">(<span class="keyword">int</span> error, <span class="keyword">const</span> <span class="keyword">char</span>* description)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">fputs</span>(description, stderr);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">key_callback</span><span class="params">(GLFWwindow* window, <span class="keyword">int</span> key, <span class="keyword">int</span> scancode, <span class="keyword">int</span> action, <span class="keyword">int</span> mods)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (key == GLFW_KEY_ESCAPE &amp;&amp; action == GLFW_PRESS)</span><br><span class="line">        <span class="built_in">glfwSetWindowShouldClose</span>(window, GL_TRUE);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    GLFWwindow* window;</span><br><span class="line">    <span class="built_in">glfwSetErrorCallback</span>(error_callback);</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">glfwInit</span>())</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">    window = <span class="built_in">glfwCreateWindow</span>(<span class="number">640</span>, <span class="number">480</span>, <span class="string">&quot;Simple example&quot;</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (!window)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">glfwTerminate</span>();</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">glfwMakeContextCurrent</span>(window);</span><br><span class="line">    <span class="built_in">glfwSwapInterval</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="built_in">glfwSetKeyCallback</span>(window, key_callback);</span><br><span class="line">    <span class="keyword">while</span> (!<span class="built_in">glfwWindowShouldClose</span>(window))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">float</span> ratio;</span><br><span class="line">        <span class="keyword">int</span> width, height;</span><br><span class="line">        <span class="built_in">glfwGetFramebufferSize</span>(window, &amp;width, &amp;height);</span><br><span class="line">        ratio = width / (<span class="keyword">float</span>) height;</span><br><span class="line">        <span class="built_in">glViewport</span>(<span class="number">0</span>, <span class="number">0</span>, width, height);</span><br><span class="line">        <span class="built_in">glClear</span>(GL_COLOR_BUFFER_BIT);</span><br><span class="line">        <span class="built_in">glMatrixMode</span>(GL_PROJECTION);</span><br><span class="line">        <span class="built_in">glLoadIdentity</span>();</span><br><span class="line">        <span class="built_in">glOrtho</span>(-ratio, ratio, <span class="number">-1.f</span>, <span class="number">1.f</span>, <span class="number">1.f</span>, <span class="number">-1.f</span>);</span><br><span class="line">        <span class="built_in">glMatrixMode</span>(GL_MODELVIEW);</span><br><span class="line">        <span class="built_in">glLoadIdentity</span>();</span><br><span class="line">        <span class="built_in">glRotatef</span>((<span class="keyword">float</span>) <span class="built_in">glfwGetTime</span>() * <span class="number">50.f</span>, <span class="number">0.f</span>, <span class="number">0.f</span>, <span class="number">1.f</span>);</span><br><span class="line">        <span class="built_in">glBegin</span>(GL_TRIANGLES);</span><br><span class="line">        <span class="built_in">glColor3f</span>(<span class="number">1.f</span>, <span class="number">0.f</span>, <span class="number">0.f</span>);</span><br><span class="line">        <span class="built_in">glVertex3f</span>(<span class="number">-0.6f</span>, <span class="number">-0.4f</span>, <span class="number">0.f</span>);</span><br><span class="line">        <span class="built_in">glColor3f</span>(<span class="number">0.f</span>, <span class="number">1.f</span>, <span class="number">0.f</span>);</span><br><span class="line">        <span class="built_in">glVertex3f</span>(<span class="number">0.6f</span>, <span class="number">-0.4f</span>, <span class="number">0.f</span>);</span><br><span class="line">        <span class="built_in">glColor3f</span>(<span class="number">0.f</span>, <span class="number">0.f</span>, <span class="number">1.f</span>);</span><br><span class="line">        <span class="built_in">glVertex3f</span>(<span class="number">0.f</span>, <span class="number">0.6f</span>, <span class="number">0.f</span>);</span><br><span class="line">        <span class="built_in">glEnd</span>();</span><br><span class="line">        <span class="built_in">glfwSwapBuffers</span>(window);</span><br><span class="line">        <span class="built_in">glfwPollEvents</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">glfwDestroyWindow</span>(window);</span><br><span class="line">    <span class="built_in">glfwTerminate</span>();</span><br><span class="line">    <span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/tech/" rel="tag">tech</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

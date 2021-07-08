@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>论文集 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=paper>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">论文集</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-11-30</span>
+  </div>
+  <div class="post-content">
+    <p>虽然之前讲过，看过了不少的论文，但是从来没有好好的总结在一起。有时候，一个概念可以大致的了解其意思，但是想要表达清楚易懂却很难。这篇文章，主要记录我读过的文章，并且将文章大致意思进行概述，用尽可能简单平时的语言将文章核心概念表述出来。</p>
+<span id="more"></span>
+
+<h1 id="文章结构"><a href="#文章结构" class="headerlink" title="文章结构"></a>文章结构</h1><p>我读的论文主要关注的领域在：<strong>物理仿真</strong>方面。但这是一个比较宽泛的说法，<br>物理仿真包括：刚体仿真，流体仿真(fluid simulation),衣服仿真(cloth simulation),壳仿真(shell simulation),绳子仿真(rod simulation)，头发仿真(hair simulation),可变形物体仿真(deformabale simulation),锁子甲(chainmail)等。可变形物体又包括: 超弹性(hyper-elastic deformation),弹性形变(elastic deformmation),弹塑性形变(elsto-plastic deformation),塑性形变(plastic deformation)。</p>
+<p>物理仿真最重要的就是三个方面：<strong>准确性</strong>(accurency)，<strong>仿真速度</strong>和<strong>稳定性</strong>(stability)。不同的仿真场景要求不一样，有的场景需要保证实时性(real-time)，比如手术仿真，游戏等。而游戏对准确性要求没那么高，对速度要求更高，如果你打着游戏，丢帧了，人物卡在那儿被人打死了，玩家肯定气的发疯。手术仿真不仅速度要求高，而且还要精确，毕竟这是关系到病人生命安危的行当，一个不注意就会让病人一命呜呼。除此之外，稳定性也是一个重要的方面，这就涉及到求解方法的鲁棒性，比如显示欧拉，隐式欧拉法等等。你可能问什么是稳定呢？这是一个好问题。我觉得更准确的说应该是发散问题，如果一个微分方程迭代求解到最后越来越发散，就会让整个仿真崩溃，比如在仿真过程中物体就像被炸弹炸掉一样。而稳定的方法最后都会得到一个收敛的解，仿真可以一直进行下去，至少我们看到会说：恩，还是这么回事儿，跟现实中的变形差不多哎。</p>
+<p>物理仿真的方法有：弹簧质子法(Masspring),有限单元元法(FEM),边界元法(Boundary Element Method),有限差分法(Finite Difference Method), 无网格法(Meshfree),平滑粒子流体动力学法(SPH),<a target="_blank" rel="noopener" href="https://www.math.ucla.edu/~jteran/papers/JSSTS15.pdf">Fluid-Implicit Particle法</a>(FLIP)等。</p>
+<p>除了物理仿真，还会有其他方面的论文。比如：<strong>缝合</strong>，<strong>切割</strong>，<strong>断裂</strong>等。</p>
+<h2 id="流体仿真"><a href="#流体仿真" class="headerlink" title="流体仿真"></a>流体仿真</h2><h3 id="Eulerian-Solid-Fluid-Coupling"><a href="#Eulerian-Solid-Fluid-Coupling" class="headerlink" title="Eulerian Solid-Fluid Coupling"></a>Eulerian Solid-Fluid Coupling</h3><p>Author: <a target="_blank" rel="noopener" href="http://cs.ucsb.edu/~yunteng.cs/index.html">Yun Teng</a>, <a target="_blank" rel="noopener" href="http://diwlevin.webfactional.com/researchdb/">David I.W.Levin</a>, <a target="_blank" rel="noopener" href="http://www.mat.ucsb.edu/~kim/">Theodore Kim</a>.</p>
+<p>This paper present a new method that achives a two-way coupling between deformable solids and an incompressible fluid where the underlying geometric representation is <strong>entirely Eulerian</strong>.<br><img src="/image/Euler_Solid-Fluid_Coupling.png" alt="Scene"><br>对物体进行六面体体素化，在网格顶点存速度，位移，力；网格中心存压力值。最后组装出质量矩阵$M$,刚度矩阵$K$,阻尼矩阵$C$,$f^{\star}$。由运动方程计算出$V^{\star}$。计算压力值$p$，由此得出pre-advection速度$v^{n+10}$。然后进行碰撞检测。</p>
+<h3 id="Modeling-and-Estimation-of-Energy-Based-Hyperelastic-Objects"><a href="#Modeling-and-Estimation-of-Energy-Based-Hyperelastic-Objects" class="headerlink" title="Modeling and Estimation of Energy-Based Hyperelastic Objects"></a>Modeling and Estimation of Energy-Based Hyperelastic Objects</h3><p>Author: Eder Miguel,David Miraut, Miguel A. Otaduy</p>
+<p>这篇文章利用可分离的能量可加项对一般的超弹性材料进行建模。扩展之后，可以对<em>非线性</em>，<em>异质性</em>材料进行建模。<br>除此之外，还提出了由<em>变形</em>来估计<em>材料属性</em>（异质性和非线性）的方法。<br>异质性由定义在材料域上每个元素的应变-空间插值来实现。非线性由一个能量模型来实现。</p>
+<h2 id="可变行物体仿真"><a href="#可变行物体仿真" class="headerlink" title="可变行物体仿真"></a>可变行物体仿真</h2><h3 id="Interactive-Simulation-of-Surgical-Needle-Insertion-and-Steering"><a href="#Interactive-Simulation-of-Surgical-Needle-Insertion-and-Steering" class="headerlink" title="Interactive Simulation of Surgical Needle Insertion and Steering"></a>Interactive Simulation of Surgical Needle Insertion and Steering</h3><p>Author: Nuttapong Chentanez,Ron Alterovitz,Daniel Ritchie,Lita Cho,Kris K. Hauser</p>
+<p>文章实现了一个手术针插入可变行组织的可交互系统，并且可以对手术针在组织中的路径进行规划。<br><strong>挑战</strong>：</p>
+<ol>
+<li>对针与组织的接触力的计算（静态空间离散模型不适合接触力的精确计算）  </li>
+<li>针与组织硬度的不同会妨碍系统的数值稳定性  </li>
+<li>实时性的要求</li>
+</ol>
+<p><strong>解决的办法</strong>：</p>
+<ol>
+<li>利用Local remeshing方法，针插入组织的部分利用组织的四面体网格的边来代替。</li>
+<li>提出了一个stick-slip摩擦模型来对3D有限元组织模型与1D弹性rod的交互进行仿真。</li>
+<li>对算法进行了一些优化来加速运行速度</li>
+</ol>
+<p><strong>文章细节</strong>：<br>利用基于四面体网格的FEM方法所建立的本构方程来对弹性组织进行建模。<br>针插入组织的部分由四面体网格的边来代替，这一部分边由离散的几条边组成，边的顶点有两种状态：静摩擦状态和动摩擦状态。针的头部顶点特殊对待，当它移动的时候就会切割组织，所以受到的阻力应该更大。</p>
+<h3 id="Projective-Dynamics-Fusing-Constraint-Projections-for-Fast-Simulation"><a href="#Projective-Dynamics-Fusing-Constraint-Projections-for-Fast-Simulation" class="headerlink" title="Projective Dynamics: Fusing Constraint Projections for Fast Simulation"></a>Projective Dynamics: Fusing Constraint Projections for Fast Simulation</h3><p>Author: Sofien Bouaziz, Sebastian Martin, Tiantian Liu, Ladislav Kavan, Mark Pauly</p>
+<p>这篇文章将连续介质力学中势能作为Constrains与Position-based dynamics 结合起来。利用连续介质力学保证仿真的准确性；另一方面利用了Position-based dynamics的特性：实时，稳定，实现简单。</p>
+<p><strong>思路</strong>：<br>首先给出implicit-Euler integration的变分形式，将求解问题转化为最优化的问题。另一方面，将rest configuration作为constraint maniford,对应的Grain-Strain$E(q)=0$,变形后的弹性势能$W(q,p) = d(q,p) + \delta_{E}(q)$来表示。</p>
+<h2 id="技巧"><a href="#技巧" class="headerlink" title="技巧"></a>技巧</h2><h3 id="A-Robust-Method-to-Extract-the-Rotational-Part-of-Deformations"><a href="#A-Robust-Method-to-Extract-the-Rotational-Part-of-Deformations" class="headerlink" title="A Robust Method to Extract the Rotational Part of Deformations"></a>A Robust Method to Extract the Rotational Part of Deformations</h3><p>Author: Matthias Muller，Jan Bender，Nuttapong Chentanez，Miles Macklin</p>
+<p>这篇文章提出了一种从任意一个$3 \times 3$矩阵里提取出旋转矩阵的方法。相较于传统的极分解方法，可以解决物体退化和翻转的问题。<br><strong>优势</strong>：  </p>
+<ol>
+<li>算法简单，很少几行就可以解决问题。  </li>
+<li>适合GPU并行处理。  </li>
+</ol>
+<p><strong>文章细节</strong>：<br>问题的数学描述：<br>设$A$为一个任意$3 \times 3$的矩阵，找到一个单位正交旋转矩阵$R$，且$det(R) = +1$使得Frobenius-norm$||A-R||^{2}_{F}$最小。<br>这是一个优化问题。</p>
+<p><strong>以前的方法</strong>：  </p>
+<ol>
+<li>利用Gram-Schmidt 正交化的方法。选$A$的第一列单位化，选$A$第二列减去第二列在第一列的投影，并单位化，之后前面两列叉乘得到第三列。但这种方法会引入ghost force，导致动量不守恒。</li>
+<li>利用极分解方法$A=RS$,但是可能有$det(R)=-1$的情况，可以在小心的选取某个方向对$R$进行翻转来解决这个问题。</li>
+<li><a target="_blank" rel="noopener" href="https://naml.us/~irving/">Irving</a>的Invertible Finite Elements For Robust Simulation of Large Deformation通过SVD的方法，翻转最小奇异值对应列的途径来解决翻转的问题。</li>
+</ol>
+<p>解决方法为：<br>初始条件：有矩阵$A$和四元数$q$，最大迭代次数maxIter<br>假设$A$的第$i$列为$a_{i}$,$R$的第$i$列为$r_{i}$<br>每一次迭代为：  </p>
+<ol>
+<li>从四元数$q$获取旋转矩阵 $R$;  </li>
+<li>$$ \omega = \frac{ \sum{r_{i} \times a_{i}}}{\sum{r_{i} \cdot a_{i}}} $$</li>
+<li>$ w = norm(\omega)$  </li>
+<li>$q = Quterniond(AngleAixsd(w,(1.0/w)* \omega ))*q$  </li>
+<li>$q = normalize(q);$</li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/paper/" rel="tag">paper</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

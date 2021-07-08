@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>vim的使用 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=tech>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">vim的使用</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-06-10</span>
+  </div>
+  <div class="post-content">
+    <p>记录一下自己常常使用的VIM命令，每次都搜索也不是个事儿。</p>
+<span id="more"></span>
+<h1 id="容易忘记的快捷键"><a href="#容易忘记的快捷键" class="headerlink" title="容易忘记的快捷键"></a>容易忘记的快捷键</h1><ul>
+<li>显示文件行号：<code>:set nu</code>。</li>
+</ul>
+<h1 id="跳转-命令模式"><a href="#跳转-命令模式" class="headerlink" title="跳转(命令模式)"></a>跳转(命令模式)</h1><ul>
+<li>跳到行首：<code>^</code>。跳到行尾：<code>$</code>.</li>
+<li>跳到下一个单词：<code>w,W,e,E</code>。跳到上一个单词：<code>b, B</code>。</li>
+<li>跳到上一行首：<code>-</code>。跳到下一行首: <code>+</code>;</li>
+<li>跳到下一段： <code>&#123; </code>。跳到上一段<code> &#125;</code>。</li>
+<li>翻页： <code>ctrl + f</code> 和 <code>ctrl + b</code>;</li>
+<li>跳转到光标所在单词下一次出现的地方：<code>n</code>,上一次出现的地方<code>shift + n</code>。</li>
+<li>定位至被标记出单词下一次出现的地方:<code>*</code>,上一次出现的地方<code>#</code>。</li>
+</ul>
+<h1 id="多文件查看"><a href="#多文件查看" class="headerlink" title="多文件查看"></a>多文件查看</h1><ul>
+<li>一次打开多个文件进行查看：<code>vi file1 file2 file2</code></li>
+<li>单个窗口，查看不同文件： <code>b + filename</code>。</li>
+<li>单个窗口，查看上一个文件： <code>bp</code>，查看下一个文件 <code>bn</code>。</li>
+</ul>
+<h1 id="多窗口查看"><a href="#多窗口查看" class="headerlink" title="多窗口查看"></a>多窗口查看</h1><ul>
+<li>多个窗口查看文件：<br>水平切分窗口：<code>:split</code>，垂直切分窗口：<code>:vsplit</code>。</li>
+<li>多个窗口之间跳转 <code>ctrl + w + h/k</code>，或者<code>ctrl + w + w</code>（<code>w</code>按两次）</li>
+</ul>
+<h1 id="补全功能"><a href="#补全功能" class="headerlink" title="补全功能"></a>补全功能</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>整行补全</td>
+<td><code>CTRL-X CTRL-L</code></td>
+</tr>
+<tr>
+<td>根据当前文件里关键字补全</td>
+<td><code>CTRL-X CTRL-N</code></td>
+</tr>
+<tr>
+<td>根据字典补全</td>
+<td><code>CTRL-X CTRL-K</code></td>
+</tr>
+<tr>
+<td>根据同义词字典补全</td>
+<td><code>CTRL-X CTRL-T</code></td>
+</tr>
+<tr>
+<td>根据头文件内关键字补全</td>
+<td><code>CTRL-X CTRL-I</code></td>
+</tr>
+<tr>
+<td>根据标签补全</td>
+<td><code>CTRL-X CTRL-]</code></td>
+</tr>
+<tr>
+<td>补全文件名</td>
+<td><code>CTRL-X CTRL-F</code></td>
+</tr>
+<tr>
+<td>补全宏定义</td>
+<td><code>CTRL-X CTRL-D</code></td>
+</tr>
+<tr>
+<td>补全vim命令</td>
+<td><code>CTRL-X CTRL-V</code></td>
+</tr>
+<tr>
+<td>用户自定义补全方式</td>
+<td><code>CTRL-X CTRL-U</code></td>
+</tr>
+<tr>
+<td>拼写建议</td>
+<td><code>CTRL-X CTRL-S</code></td>
+</tr>
+</tbody></table>
+<h1 id="查看函数定义"><a href="#查看函数定义" class="headerlink" title="查看函数定义"></a>查看函数定义</h1><p>查看函数的定义：命令模式下，<code>gd</code>。<br>查看完函数定义想返回到原来的地方：命令模式下，<code>ctrl + o</code>。</p>
+<h1 id="使用ctags查看程序"><a href="#使用ctags查看程序" class="headerlink" title="使用ctags查看程序"></a>使用ctags查看程序</h1><p>上面使用gd只能用来查看函数的定义，但是要查看变量的定义就跳转不了。而Ctags就提供变量，函数，类，结构体，对象，接口等等的快速定位功能。如果用过Visual Studio，你肯定知道<code>F12</code>和<code>ctrl + - </code>。他们的功能和Ctags提供的功能一样，都是快速定位和快速返回。</p>
+<h2 id="ctags安装"><a href="#ctags安装" class="headerlink" title="ctags安装"></a>ctags安装</h2><p>Ubuntu下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install ctags</span><br></pre></td></tr></table></figure>
+<h2 id="生成tags文件"><a href="#生成tags文件" class="headerlink" title="生成tags文件"></a>生成tags文件</h2><ul>
+<li>生成源文件对应的tags文件(里面可能就是各个变量，函数，类等等对应的文件位置和行号信息)。<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 递归的为当前目录及子目录下的所有代码文件生成tags文件</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ctags -R</span></span><br></pre></td></tr></table></figure></li>
+<li>只为某些源文件生成tags文件<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ctags filename.c filename.h filename1.c</span></span><br></pre></td></tr></table></figure>
+或者<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ctags *.c *.h</span></span><br></pre></td></tr></table></figure>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2></li>
+</ul>
+<ol>
+<li>用<code>vim</code>打开源代码</li>
+<li>在命令模式下指定tags文件：<code>:set tags = ./tags</code> （引用多个tags文件，用逗号隔开）</li>
+<li>使用快捷键：<code>ctrl + ]</code>和<code>ctrl + O</code>。跳转到定义或者返回原来位置。</li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/tech/" rel="tag">tech</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

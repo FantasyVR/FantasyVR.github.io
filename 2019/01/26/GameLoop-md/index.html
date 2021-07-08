@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>GameLoop.md - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理仿真>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">GameLoop.md</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2019-01-26</span>
+  </div>
+  <div class="post-content">
+    <p>游戏循环是游戏最核心的部分，所以翻译了一篇很好的讲游戏循环的文章。探讨了四种处理FPS和游戏更新的方式，然后分析了在不同配置硬件上的表现。</p>
+<span id="more"></span>
+
+<p>翻译：<a target="_blank" rel="noopener" href="http://www.koonsolo.com/news/dewitters-gameloop/">Game Loop</a></p>
+<h1 id="游戏循环-Game-Loop"><a href="#游戏循环-Game-Loop" class="headerlink" title="游戏循环(Game Loop)"></a>游戏循环(Game Loop)</h1><p>每个游戏都包括一系列操作，比如获取用户输入，更新游戏状态，处理AI，播放音乐和音效，游戏渲染。这一列操作都要在游戏循环(Game Loop)里完成。 游戏循环事每个游戏的核心。在这篇文章里，我不会讲前面所说操作的细节，只关注游戏循环。下面是游戏循环一个最简单的形式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> game_is_running = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">while</span>( game_is_running ) &#123;</span><br><span class="line">       <span class="built_in">update_game</span>();</span><br><span class="line">       <span class="built_in">display_game</span>();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>上面游戏循环最大的问题就是没有处理时间，游戏就只是一直运行。在低配硬件上跑的慢，高配硬件上跑的快。为了使得在不同配合的硬件上跑的一样快，我们就需要处理时间。处理时间有很多种方式，我们会在后面的章节里讨论。首先，让我们解释一下两个后面都要用到的概念：</p>
+<blockquote>
+<p><strong>FPS</strong>: FPS是 Frames Per Second的缩写，也就是 帧数/秒。在上面代码里，也就是函数 <code>display_game()</code> 一秒运行多少次。 （25 FPS 就是 25帧/秒。）</p>
+</blockquote>
+<blockquote>
+<p><strong>Game Speed</strong>: Game Speed 也就是游戏的速度，它表示 <em>游戏状态一秒更新的次数</em>。或者换句话说: 函数<code>update_game()</code>一秒调用的次数。</p>
+</blockquote>
+<h2 id="FPS依赖于固定的-Game-Speed"><a href="#FPS依赖于固定的-Game-Speed" class="headerlink" title="FPS依赖于固定的 Game Speed"></a>FPS依赖于固定的 Game Speed</h2><h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>一种简单处理时间问题的方法是 让游戏以稳定速度(25帧/秒)运行。具体的实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> FRAMES_PER_SECOND = <span class="number">25</span>; <span class="comment">// FPS设置为25</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> SKIP_TICKS = <span class="number">1000</span> / FRAMES_PER_SECOND; <span class="comment">// 每次游戏循环固定的运行时间</span></span><br><span class="line"><span class="comment">// GetTickCount() 返回从游戏开始度过的时间，单位是毫秒</span></span><br><span class="line">DWORD next_game_tick = <span class="built_in">GetTickCount</span>();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> sleep_time = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">bool</span> game_is_running = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>( game_is_running ) &#123;</span><br><span class="line">    <span class="built_in">update_game</span>();</span><br><span class="line">    <span class="built_in">display_game</span>();</span><br><span class="line"></span><br><span class="line">    next_game_tick += SKIP_TICKS;</span><br><span class="line">    <span class="comment">// 如果早早干完活，就去睡觉。</span></span><br><span class="line">    sleep_time = next_game_tick - <span class="built_in">GetTickCount</span>(); </span><br><span class="line">    <span class="keyword">if</span>( sleep_time &gt;= <span class="number">0</span> ) &#123;</span><br><span class="line">        <span class="built_in">Sleep</span>( sleep_time );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Shit, we are running behind!</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个实现一个大大的好处就是：<strong>简单</strong>。因为你知道<code>update_game()</code>一秒调用25次，所以代码很直接就可以写出来。例如，在这种游戏循环里实现一个重播的功能很简单。如果你地游戏里没有使用随机数，你就可以将用户输入造成的改变写到日志里，然后直接重新播放他们。在你的测试硬件上，你可以调试 <code>FRAMES_PER_SECOND</code> 到一个理想值，但在不同配置的硬件上会发生什么，我们看一下。</p>
+<h3 id="低配硬件"><a href="#低配硬件" class="headerlink" title="低配硬件"></a>低配硬件</h3><p>如果硬件能跑25FPS，那没关系。但问题是，低配硬件可能跑步了25FPS。因为低配硬件跑的慢啊。更糟糕的情况是游戏有的模块跑的很慢，有的模块跑的速度还行。这时候上面处理时间的方式就使得游戏无法运行。</p>
+<h3 id="高配硬件"><a href="#高配硬件" class="headerlink" title="高配硬件"></a>高配硬件</h3><p>游戏在高配置的硬件上运行的很好，但是会浪费很多时钟周期。如果你地配置可以支持你运行300FPS，而你只让游戏跑25FPS，真的很浪费啊。而且，你还可能会错过很多牛逼的特效，特别对于快速移动的物体。另一方面，对于移动设备，这样做也会空空的消耗电池，浪费能源啊。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>让FPS依赖于固定的游戏速度，这种方案实现简单，游戏的代码也简单。但是有一些问题，如果FPS设置的高，低配硬件跑起来就有问题。FPS设置的低，高配硬件上就会浪费一些视觉效果。</p>
+<h2 id="游戏速度依赖于变化的FPS"><a href="#游戏速度依赖于变化的FPS" class="headerlink" title="游戏速度依赖于变化的FPS"></a>游戏速度依赖于变化的FPS</h2><h3 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h3><p>另一个实现游戏循环的方法就是让它运行速度尽可能的快。让FPS来主宰游戏的速度。这一帧和上一帧时间的差来更新游戏循环。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">DWORD prev_frame_tick;</span><br><span class="line">DWORD curr_frame_tick = <span class="built_in">GetTickCount</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> game_is_running = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">while</span>( game_is_running ) &#123;</span><br><span class="line">    prev_frame_tick = curr_frame_tick;</span><br><span class="line">    curr_frame_tick = <span class="built_in">GetTickCount</span>();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">update_game</span>( curr_frame_tick - prev_frame_tick );</span><br><span class="line">    <span class="built_in">display_game</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码看起来有点复杂，因为我们需要在调用<code>update_game()</code>的时候考虑两帧之间的时间差。其实也没有多难，第一眼看起来这是处理时间问题的理想方式。我看到很多聪明的程序员用这种方式来实现游戏循环。有些人可能希望在他们用这种方式处理时间问题之前看到我的文章。因为这种方式不管是在低配还是高配硬件上都有问题！</p>
+<h3 id="低配硬件-1"><a href="#低配硬件-1" class="headerlink" title="低配硬件"></a>低配硬件</h3><h3 id="高配硬件-1"><a href="#高配硬件-1" class="headerlink" title="高配硬件"></a>高配硬件</h3><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>（这部分我没看懂）。</p>
+<h2 id="固定游戏速度，最大化FPS"><a href="#固定游戏速度，最大化FPS" class="headerlink" title="固定游戏速度，最大化FPS"></a>固定游戏速度，最大化FPS</h2><h3 id="实现-2"><a href="#实现-2" class="headerlink" title="实现"></a>实现</h3><p>我们第一个实现是 FPS依赖于固定的游戏速度，它在低配的硬件上跑有问题，因为游戏速度和帧率都会下降。一个可能的方案就是保持游戏状态更新的速率，减少渲染帧率。具体实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> TICKS_PER_SECOND = <span class="number">50</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> SKIP_TICKS = <span class="number">1000</span> / TICKS_PER_SECOND;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MAX_FRAMESKIP = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">DWORD next_game_tick = <span class="built_in">GetTickCount</span>();</span><br><span class="line"><span class="keyword">int</span> loops;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> game_is_running = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">while</span>( game_is_running ) &#123;</span><br><span class="line"></span><br><span class="line">    loops = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 保证游戏状态更新，先不管渲染</span></span><br><span class="line">    <span class="keyword">while</span>( <span class="built_in">GetTickCount</span>() &gt; next_game_tick &amp;&amp; loops &lt; MAX_FRAMESKIP) &#123;</span><br><span class="line">        <span class="built_in">update_game</span>();</span><br><span class="line"></span><br><span class="line">        next_game_tick += SKIP_TICKS;</span><br><span class="line">        loops++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">display_game</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>游戏每秒钟稳定的更新50次，渲染是尽可能的快。（译者注：我发现游戏速度并不一定稳定在50次/秒。如果<code>update_game()</code>和<code>display_game()</code>在<code>SKIP_TICKS</code>时间内就完成了，那游戏循环就可以更快的运行了？）</p>
+<h2 id="固定的游戏速度独立于变化的FPS"><a href="#固定的游戏速度独立于变化的FPS" class="headerlink" title="固定的游戏速度独立于变化的FPS"></a>固定的游戏速度独立于变化的FPS</h2><h3 id="实现-3"><a href="#实现-3" class="headerlink" title="实现"></a>实现</h3><p>上面的实现可不可以更好？ 我们发现 <code>update_game()</code> 得到的游戏状态和 <code>display_game()</code>渲染的状态时不一致的，这两个函数直接拿的游戏状态有一个时间差。那么该怎么改进呢，那就是用插值的方法得到比较准确的<code>display_game()</code>状态。实现如下。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> TICKS_PER_SECOND = <span class="number">25</span>;</span><br><span class="line">   <span class="keyword">const</span> <span class="keyword">int</span> SKIP_TICKS = <span class="number">1000</span> / TICKS_PER_SECOND;</span><br><span class="line">   <span class="keyword">const</span> <span class="keyword">int</span> MAX_FRAMESKIP = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">   DWORD next_game_tick = <span class="built_in">GetTickCount</span>();</span><br><span class="line">   <span class="keyword">int</span> loops;</span><br><span class="line">   <span class="keyword">float</span> interpolation;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">bool</span> game_is_running = <span class="literal">true</span>;</span><br><span class="line">   <span class="keyword">while</span>( game_is_running ) &#123;</span><br><span class="line"></span><br><span class="line">       loops = <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">while</span>( <span class="built_in">GetTickCount</span>() &gt; next_game_tick &amp;&amp; loops &lt; MAX_FRAMESKIP) &#123;</span><br><span class="line">           <span class="built_in">update_game</span>();</span><br><span class="line"></span><br><span class="line">           next_game_tick += SKIP_TICKS;</span><br><span class="line">           loops++;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">// 下面的代码可以达到更好的渲染效果</span></span><br><span class="line">       interpolation = <span class="built_in"><span class="keyword">float</span></span>( <span class="built_in">GetTickCount</span>() + SKIP_TICKS - next_game_tick )</span><br><span class="line">                       / <span class="built_in"><span class="keyword">float</span></span>( SKIP_TICKS );</span><br><span class="line">       <span class="built_in">display_game</span>( interpolation );</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>游戏循环比你想象的要复杂。我们考察了4中可能的实现方案，其中一个是你应该竭力避免的：方案2。<br>对于移动设备，固定的帧率是个简单方便的方案。但是如果你想要发挥硬件的能力，你最好让游戏循环中FPS独立于游戏速度，可以通过预测函数来实现。<br>如果你不想用预测函数，那么你可以用固定游戏速度，变化FPS的方案，但是你应该找到低配和高配设备之间平衡的游戏更新速率。</p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

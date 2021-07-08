@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>计算平方根的逆 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=math>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">计算平方根的逆</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-07-09</span>
+  </div>
+  <div class="post-content">
+    <p>如何高效的计算出$y=x^{-1/2}$? 这是一个问题。</p>
+<span id="more"></span>
+
+<p>本篇是一个译文，原文在<a target="_blank" rel="noopener" href="http://rrrola.wz.cz/inv_sqrt.html">here</a>。</p>
+<h1 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h1><p>还记得在Quake III中著名的对 $y=x^{-1/2}$ 的计算么？代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">inv_sqrt</span><span class="params">(<span class="keyword">float</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123; <span class="class"><span class="keyword">union</span> &#123;</span> <span class="keyword">float</span> f; uint32 u; &#125; y = &#123;x&#125;;</span><br><span class="line">  y.u = <span class="number">0x5F3759DF</span>ul - (y.u &gt;&gt; <span class="number">1</span>);  <span class="comment">// Magic!</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0.5f</span> * y.f * (<span class="number">3.0f</span> - x * y.f * y.f);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="这段代码如何工作的？"><a href="#这段代码如何工作的？" class="headerlink" title="这段代码如何工作的？"></a>这段代码如何工作的？</h2><p>将 <code>float x</code>作为一个整数(integer) 是对 $p+q \log_{2} x$很好的估计，其中 $p \approx 2^{30} - 2^{23}, q = 2^{23}$。 由此，我们可以将 那一行神奇的代码解释为：<br>$$p + q \log_{2} y = p+q\log_{2} x^{-1/2} = p + q(-0.5 \log_{2} x) = 1.5p - (p+q \log_{2} x ) /2$$</p>
+<p>最后， 进行一次<code>Newton-Raphson</code>迭代来细化结果：<br>$y = x^{-1/2}$： 找到$f(y) = y^{-2} - x = 0$的解。<br>$$ y \leftarrow y - f(y)/f’(y)$$<br>$$y \leftarrow y-(y^{-2} - x)/(-2y^{3}) = (2y + y - xy^3)/2 = 0.5y(3-xy^2)$$</p>
+<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p><a target="_blank" rel="noopener" href="http://www.lomont.org/Math/Papers/2003/InvSqrt.pdf">Chris Lomont</a> 研究了上面的代码，他发现常数<code>0x5F375A86</code> 可以最小化所有归一化<code>float</code>的最大相对误差$\left | 1 - inv\_sqrt(x)/x^{-1/2} \right|$。<a target="_blank" rel="noopener" href="http://mceniry.net/papers/Fast%20Inverse%20Square%20Root.pdf">Charles McEniry</a>针对<code>double</code>有一个很好的分析并且找到了对应的最优常数。</p>
+<h1 id="3D-优化"><a href="#3D-优化" class="headerlink" title="3D 优化"></a>3D 优化</h1><p>在保证速度的情况下，我们能够做到更好么？ 让我们暂时忘记那些解释，看一看原来的代码。里面不仅仅是一个常数，而是3个常数可以优化。</p>
+<p>为了找到最优值， 我实现了一个 <strong>DIRECT</strong> 优化器的变种：</p>
+<blockquote>
+<p>假设：我们在定义域$(0,1)^{D}$上最小化$f(x)$。我们有一池(pool)boxes，每个box有一个待定的中心。每个box都有一个水平(<em>level</em>)，而且它的边可长可短(长 = $3 \cdot$短 = $3^{-level}$)。 “最优”的意思是：拥有最小的待定值。</p>
+</blockquote>
+<p><strong>Init</strong>. 评定第一个box, 它覆盖所有的参数范围，所以它的 level = 0。<br><strong>Choose</strong>. 从每个 <em>level &lt; maxLevel</em> 中调出最好的box:<br><strong>Sample</strong>. 对于该box每个<em>long</em> 边， 评估 $f(center_{1},center_{2},…,center_{d})\pm 3^{-level},…, center_{D}$。<br><strong>Split</strong>. 沿着最好的方向，重复的分割中间的box为3份，将边加入到池(pool)中，并且<em>level</em> 保持不变。 最后分割出来的三个boxes加入到 <em>level+1</em>.<br><strong>Repeat</strong>. 如果最好的函数值长时间为改善，尝试局部搜索(Local search)或者加深<em>maxlevel</em>。返回<em>Choose</em>步骤。</p>
+<h2 id="局部搜索"><a href="#局部搜索" class="headerlink" title="局部搜索"></a>局部搜索</h2><p>向最佳参数加入高斯随机数，并评估他们。尝试几个variation scales.</p>
+<h2 id="加速"><a href="#加速" class="headerlink" title="加速"></a>加速</h2><p>相对误差的计算只在$[1,4)$的范围上。只对每$512^{th}$浮点值进行采样可以得到更好的估计。然后用最高的2%,彻底的搜索他们附近区域。 这个估计在整个搜索过程中从来没有出过一次错。</p>
+<h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><p><strong>精确度</strong>提高了2.7倍。 我尝试着优化最小相对均方误差（最小二乘法是所有酷孩子会用的标准）。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="center">C1</th>
+<th align="right">C2</th>
+<th align="right">C3</th>
+<th align="right">max rel_error</th>
+<th align="right">avg rel_error^2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>original</td>
+<td align="center">0x5F3759DF</td>
+<td align="right">0.5</td>
+<td align="right">3.0</td>
+<td align="right">1.75233867·10^{−3}</td>
+<td align="right">1.24792411·10^{−6}</td>
+</tr>
+<tr>
+<td>Lomont</td>
+<td align="center">0x5F375A86</td>
+<td align="right">0.5</td>
+<td align="right">3.0</td>
+<td align="right">1.75130156·10^{−3}</td>
+<td align="right">1.24936147·10^{−6}</td>
+</tr>
+<tr>
+<td>least squares</td>
+<td align="center">0x5F1AD0A1</td>
+<td align="right">0.755897697</td>
+<td align="right">2.27828001</td>
+<td align="right">1.14832618·10^{−3}</td>
+<td align="right">1.26897912·10^{−7}</td>
+</tr>
+<tr>
+<td>minimax</td>
+<td align="center">0x5F1FFF77</td>
+<td align="right">0.703974056</td>
+<td align="right">2.38919526</td>
+<td align="right">6.50197782·10^{−4}</td>
+<td align="right">2.00005877·10^{−7}</td>
+</tr>
+</tbody></table>
+<p><img src="/image/inv_sqrt_graph.png" alt="inv_sqrt_graph"></p>
+<p>相对误差的值相当的令人烦恼–因为需要重启上百次(伴随扰动起始边界)才能得到这些值。 如果你想提高搜索效率，<code>minimax</code>另一个好的范围是$(0x5F601800, 0.2485, 4.7832)$附近。可以在<a target="_blank" rel="noopener" href="http://rrrola.wz.cz/files/inv_sqrt.zip">here</a>下载代码。</p>
+<h2 id="未来展望"><a href="#未来展望" class="headerlink" title="未来展望"></a>未来展望</h2><p>对于double,用一两次<code>Newton</code>迭代效果应该也不错。 <code>Halley</code>迭代看起来也不错，但是需要设计除法：$y \leftarrow y(xy^2+3)/(3xy^2+1)$。</p>
+<p>同样的方法可以用在计算任意$x^{-1/2^k}$上。程序已经写好了，所以看一下应该挺有趣的。</p>
+<h1 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h1><p>在最优解附近经过漫长枯燥的搜索，终于有了一点提升。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="center">C1</th>
+<th align="right">C2</th>
+<th align="right">C3</th>
+<th align="right">max rel_error</th>
+<th align="right">avg rel_error^2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>old</td>
+<td align="center">0x5F1FFF77</td>
+<td align="right">0.703974056</td>
+<td align="right">2.38919526</td>
+<td align="right">6.50197782·10^{−4}</td>
+<td align="right">2.00005877·10^{−7}</td>
+</tr>
+<tr>
+<td>new</td>
+<td align="center">0x5F1FFFF9</td>
+<td align="right">0.703952253</td>
+<td align="right">2.38924456</td>
+<td align="right">6.50196699·10^{−4}</td>
+<td align="right">2.00010826·10^{−7}</td>
+</tr>
+</tbody></table>
+<p>最新的代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">inv_sqrt</span><span class="params">(<span class="keyword">float</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123; <span class="class"><span class="keyword">union</span> &#123;</span> <span class="keyword">float</span> f; uint32 u; &#125; y = &#123;x&#125;;</span><br><span class="line">  y.u = <span class="number">0x5F1FFFF9</span>ul - (y.u &gt;&gt; <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0.703952253f</span> * y.f * (<span class="number">2.38924456f</span> - x * y.f * y.f);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我发现<a target="_blank" rel="noopener" href="http://pizer.wordpress.com/2008/10/12/fast-inverse-square-root/">Pizer</a>和我有相同的想法。但是好像他对找到最优解没想我这么痴迷。</p>
+<hr>
+<h1 id="番外"><a href="#番外" class="headerlink" title="番外"></a>番外</h1><p>如果想看更多相关的内容:</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Fast_inverse_square_root">Fast inverse square root</a></li>
+<li><a target="_blank" rel="noopener" href="https://ece.uwaterloo.ca/~dwharder/aads/Algorithms/Inverse_square_root/">Inverse Square Root</a></li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/math/" rel="tag">math</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

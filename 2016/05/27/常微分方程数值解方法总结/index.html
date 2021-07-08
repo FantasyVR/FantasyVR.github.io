@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>常微分方程数值解方法总结 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=math>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">常微分方程数值解方法总结</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-05-27</span>
+  </div>
+  <div class="post-content">
+    <p>工程中经常使用的数值积分方法。在Vega中的应用可以看上一篇。此篇待续。。。</p>
+<span id="more"></span>
+
+<h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>一阶微分问题是初始值问题(Initial Value Problem)<br>$$\begin{equation}\label{eq:1}<br>\left\{\begin{matrix}<br>y’(t) = f(t,y(t)),\\<br>y(t_{0}) = y_{0}<br>\end{matrix}\right. \tag{1}<br>\end{equation}$$<br>$f:[t,\infty] \times R^{d} \rightarrow R^{d}$,初始条件$y_{0} \in R^{d}$是已知向量，一阶表示只有$y$的一阶导数出现在方程中，没有更高阶的导数出现。</p>
+<h1 id="求解方法"><a href="#求解方法" class="headerlink" title="求解方法"></a>求解方法</h1><p>一阶初始值问题解法分两种</p>
+<ol>
+<li>Linear multistep methods (LMM)</li>
+<li>Runge-Kutta methods (RKM)</li>
+</ol>
+<p>再细分又分<strong>显式</strong>与<strong>隐式</strong>两种方法</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">LMM</th>
+<th align="center">RKM</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Implicit</td>
+<td align="center">Adams-Moultom Methods, Backward Differentiation Methods</td>
+<td align="center">Diagnally Implicit Runge-Kutta, Singly Diagnally Implict Runge-Kutta, Gauss-Radau</td>
+</tr>
+<tr>
+<td align="center">Explicit</td>
+<td align="center">Adams-Bashforth Methods</td>
+<td align="center">Lower Diagnal Butcher Tableau</td>
+</tr>
+</tbody></table>
+<h2 id="欧拉法"><a href="#欧拉法" class="headerlink" title="欧拉法"></a>欧拉法</h2><p>欧拉法分为两种：<strong>前向欧拉法</strong>(Forward Euler Method)和<strong>后向欧拉法</strong>(Backward Euler Method)。</p>
+<h3 id="前向欧拉法"><a href="#前向欧拉法" class="headerlink" title="前向欧拉法"></a>前向欧拉法</h3><p>对于曲线上任一点，通过在曲线切向移动很小的距离来估计临近点的值。从公式$(1)$中，使用有限差分法来代替$y’$得：<br>$$\begin{equation}\label{eq:2}<br>y’(t) \approx \frac{y(t+h)-y(t)}{h} \tag{2}<br>\end{equation}$$<br>重写公式$(2)$并联立$(1)$得：$y(t+h) \approx y(t) + h \ast y’(t)$即：<br>$$\begin{equation}\label{eq:3}<br>y(t+h) \approx y(t) + h \ast f(t,y(t)) \tag{3}<br>\end{equation}$$<br>在实际使用中，选取补偿h,然后构建一个序列$t_{0},t_{1}=t_{0}+h,t_{2}=t_{1}+h,…,$使用$y_{n}$来估计$y(t_{n})$由$(3)$知，<br>$$\begin{equation}\label{eq:4}<br>y_{n+1} = y_{n} + h \ast f(t_{n},y_{n}) \tag{4}<br>\end{equation}$$<br>这就是<strong>前向欧拉法</strong>，这是一种显式方法，因为$y_{n}$已知。</p>
+<h3 id="后向欧拉法"><a href="#后向欧拉法" class="headerlink" title="后向欧拉法"></a>后向欧拉法</h3><p>在前向欧拉法的推导过程中不使用$(2)$而是：<br>$$\begin{equation}\label{eq:5}<br>y’(t) \approx \frac{y(t)-y(t-h)}{h} \tag{5}<br>\end{equation}$$<br>其它推导与前向欧拉法相同，得到<br>$$\begin{equation}\label{eq:6}<br>y_{n+1} = y_{n} + h \ast f(t_{n+1},y_{n+1}) \tag{6}<br>\end{equation}$$<br>后向欧拉法是隐式方法，因为我们必须通过解一个方程来得到$y_{n+1}$，经常使用固定点迭代(fixed point iteration)或Newton-Raphson法来解这个方程。当然，因为要解方程，所以隐式方法要比显示方法更费时。<br>隐式方法的优点：解stiffness equation 的时候更稳定，而且可以允许更大的步长$h$。</p>
+<h2 id="Newmark-Beta-Method"><a href="#Newmark-Beta-Method" class="headerlink" title="Newmark-Beta Method"></a>Newmark-Beta Method</h2><p>由<em>Extend mean value theorem</em>，速度可以如下求出：<br>$$\dot{\mu}_{n+1}  = \dot{\mu}_{n} +\Delta t \ddot{\mu}_{\gamma} $$<br>其中：<br>    $$\ddot{\mu}_{r} = (1-\gamma) \ddot{\mu}_{n} + \gamma \ddot{\mu}_{n+1},\quad 0 \leq \gamma \leq 1$$<br>所以：<br>    $$\dot{\mu}_{n+1} = \dot{\mu}_{n} + (1-\gamma) \Delta t \ddot{\mu}_{n} + \gamma \Delta t\ddot{\mu}_{n+1}$$<br>因为加速度也随时间改变，所以可以将<em>Extend mean value theorem</em>扩展到时间的二次导数来求出正确的位移:<br>    $$\mu_{n+1} = \mu_{n} + \Delta t \dot{\mu}_{n} + \frac{1}{2}\Delta t^{2} \ddot{\mu}_{\beta}$$<br>其中：<br>    $$\ddot{\mu}_{\beta} = (1-2\beta) \ddot{\mu}_{n} + 2\beta \ddot{\mu}_{n+1},\quad 0\leq 2\beta \leq 1 $$<br>Newmark 给出了一个合理的$\gamma$值：0.5。代入上面的公式得：<br>$$<br>\dot{\mu}_{n+1} = \dot{\mu}_{n} + \frac{\Delta t}{2} (\ddot{\mu}_{n} + \ddot{\mu}_{n+1}) \<br> \mu_{n+1} = \mu_{n} + \Delta t \dot{\mu}_{n} + \frac{1-2\beta}{2}\Delta t^{2} \ddot{\mu}_{n}+\beta \Delta t^{2} \ddot{\mu}_{n+1}<br>$$<br>其中$\beta \in (0,1)$，通常$\beta = 0.25$得到常量的平均加速度。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/math/" rel="tag">math</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

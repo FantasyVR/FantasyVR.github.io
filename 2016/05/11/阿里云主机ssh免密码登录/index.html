@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>阿里云主机ssh免密码登录 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=tech>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">阿里云主机ssh免密码登录</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-05-11</span>
+  </div>
+  <div class="post-content">
+    <h1 id="云主机配置："><a href="#云主机配置：" class="headerlink" title="云主机配置："></a>云主机配置：</h1><p>  <code>操作系统</code>: <code>CentOS 7.0 64位</code><br>  <code>CPU</code>: <code>1 核</code><br>  <code>公网IP</code>: <code>78.129.23.45</code><br>  <code>用户名</code>: <code>root</code><br>  <code>密码</code>：<code>bugaosuni</code></p>
+<span id="more"></span>
+
+<h1 id="本地环境："><a href="#本地环境：" class="headerlink" title="本地环境："></a>本地环境：</h1><p> 我在<code>VMware</code>下安装的 <code>Ubuntu 14.04</code>.本文的主要目的就是在<code>Ubuntu</code>上能够免密码登录云主机。</p>
+<h1 id="具体设置步骤"><a href="#具体设置步骤" class="headerlink" title="具体设置步骤"></a>具体设置步骤</h1><h2 id="Ubuntu-客户端"><a href="#Ubuntu-客户端" class="headerlink" title="Ubuntu 客户端"></a>Ubuntu 客户端</h2><p>1.进入.ssh 文件夹，如果没有就创建一个.ssh文件夹<br>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$mkdir</span> ~/.ssh</span><br><span class="line"><span class="variable">$cd</span> ~/.ssh/</span><br></pre></td></tr></table></figure></p>
+<p>2.生成rsa秘钥<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ssh</span>-keygen -t rsa</span><br></pre></td></tr></table></figure><br>在该文件夹下就会产生三个文件夹：<code>id_rsa</code>,<code>id_rsa.pub</code>,<code>know_hosts</code>。<br><code>id_rsa</code>：存储私钥，记得只能自己看哦。别人那到这个文件就完蛋蛋咯。<br><code>id_rsa.pub</code>:存储公钥，用来通信加密使用，有了这个人家才能确定这是你<br>3.公钥拷贝到云主机<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$scp</span> id_rsa.pub  root@78.129.23.45:/root/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure></p>
+<p>Note:云主机上没有<code>.ssh/</code>文件时，你要自己建立一个。</p>
+<h2 id="云主机端"><a href="#云主机端" class="headerlink" title="云主机端"></a>云主机端</h2><p>1.登录到云主机</p>
+<p>2.进入.ssh/文件夹<br> <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$cd</span>  /root/.ssh/</span><br></pre></td></tr></table></figure></p>
+<p>3.将客户端公钥放入云主机识别keys文件夹中<br> <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$cat</span> id_rsa.pub &gt;&gt; authorized_keys</span><br></pre></td></tr></table></figure></p>
+<p>4.销毁公钥<br> <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$rm</span> id_rsa.pub</span><br></pre></td></tr></table></figure></p>
+<h2 id="Ubuntu-客户端-1"><a href="#Ubuntu-客户端-1" class="headerlink" title="Ubuntu 客户端"></a>Ubuntu 客户端</h2><p>这个时候就可以登录云主机了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ssh</span> root@78.129.23.45</span><br></pre></td></tr></table></figure>
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/tech/" rel="tag">tech</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

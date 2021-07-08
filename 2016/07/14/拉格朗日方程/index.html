@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>拉格朗日方程 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">拉格朗日方程</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-07-14</span>
+  </div>
+  <div class="post-content">
+    <p>本文是对拉格朗日方程的讲解!</p>
+<span id="more"></span>
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在计算机图形学基于物理的仿真中，最基础最重要的就是运动方程。有了运动方程才能计算物体的位移，才能仿真出运动的物体。之前，看了很多的论文，里面也都有拉格朗日运动方程，一直很迷惑到底是怎么推理出的呢？所以决定搞清楚它的来龙去脉。</p>
+<h1 id="拉格朗日方程的诞生"><a href="#拉格朗日方程的诞生" class="headerlink" title="拉格朗日方程的诞生"></a>拉格朗日方程的诞生</h1><h2 id="牛顿运动方程"><a href="#牛顿运动方程" class="headerlink" title="牛顿运动方程"></a>牛顿运动方程</h2><p>我们都知道牛顿运动第二定律$F = ma$，在高中的时候在简单的场景里面进行力的分析，或者给了力之后求解一个运动方程。但是对于真实的系统呢？它更加复杂：</p>
+<ol>
+<li>Vectoral equation - diffcult to manage</li>
+<li>Constraints - what holds the system together?</li>
+<li>No general procedures</li>
+</ol>
+<p>而拉格朗日提供解决这些问题的简便的方法:</p>
+<ol>
+<li>Avoiding some constraints</li>
+<li>Equations presented in a standard form</li>
+</ol>
+<p>拉格朗日方程总的来说：</p>
+<ul>
+<li>使用动能和势能来求解运动</li>
+<li>不需要求出加速度（动能只需要速度）</li>
+<li>不需要求出惯性速度</li>
+</ul>
+<h2 id="拉格朗日方程"><a href="#拉格朗日方程" class="headerlink" title="拉格朗日方程"></a>拉格朗日方程</h2><p><strong>定义</strong>：拉格朗日函数<br>$L = T -V$(Kinetic - Potential Energies)即动能-势能</p>
+<p><strong>定义</strong>：拉格朗日方程<br>对于保守系统：<br>$$\frac{d}{dt}(\frac{\partial L}{\partial \dot{q}_{i}}) - \frac{\partial L}{\partial q_{i}}=0$$<br>上面的微分方程就是系统的运动方程。</p>
+<p><strong>关键</strong>：</p>
+<ul>
+<li>牛顿的方法需要3个方向的加速度，$F=ma$，要处理约束力。</li>
+<li>拉格朗日方法直接获取最后的方程。</li>
+</ul>
+<p>拉格朗日方程处理约束的简洁性使它更由于牛顿法。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%89%A9%E7%90%86/" rel="tag">物理</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

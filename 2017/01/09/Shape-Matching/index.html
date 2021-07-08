@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Shape Matching - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=数学>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Shape Matching</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2017-01-09</span>
+  </div>
+  <div class="post-content">
+    <p>Shape Matching 是对基于粒子的物体进行仿真时一个重要的方法。</p>
+<span id="more"></span>
+
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><strong>Shape Matching</strong> 的核心思想是<em>最小二乘法</em>。Shape Matching 在很多地方都有运用，比如PBD中的刚体约束，计算两个点云的关系等。</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>两个粒子集合$P=\left \{ p_{1},p_{2},…,p_{n} \right \}$和$Q=\left \{ q_{1},q_{2},…,q_{n} \right \}$ \in $R^{d}$。以其中一个粒子集合为参考，我们要找出一个刚性变换(只有旋转和平移)，使得另一个粒子集合进行刚性变换后，两个粒子系统最大程度上对齐。eg.在基于粒子的刚体运动仿真中，刚体是由一堆粒子组成，这堆粒子就可以看成是集合$P$。在遇到碰撞或者外力的时候，一部分粒子就会改变其位置和速度等，这时候组成物体的这堆粒子集合我们就看成$Q$。因为物体是刚体，所以，粒子之间的相对位置不能改变。如何找出一个旋转矩阵$R$和平移向量$t$呢？解决的方法就是求一个最小二乘问题：<br>$$(R,t) = \underset{R \in so(d),t \in \mathbb{R}^{d}}{argmin}  \sum_{i=1}^{n}w_{i}(Rp_{i}+t-q_{i})^{2} $$</p>
+<p>下面是对该优化问题的求解步骤。有两种解决方法：SVD求解法和极分解求解法。</p>
+<h2 id="利用SVD求解"><a href="#利用SVD求解" class="headerlink" title="利用SVD求解"></a>利用SVD求解</h2><p>一般将权重设置为粒子的质量</p>
+<ol>
+<li>计算两个粒子集合的质心：<br>$$\bar{p}=\frac{\sum_{i=1}^{n} w_{i}p_{i}}{\sum_{i=1}^{n} w_{i}},\bar{q}=\frac{\sum_{i=1}^{n} w_{i}q_{i}}{\sum_{i=1}^{n} w_{i}}$$</li>
+<li>计算局部坐标:<br>$$x_{i}:=p_{i}-\bar{p},y_{i}:=q_{i}-\bar{q}$$</li>
+<li>计算出$d\times d$协方差矩阵:<br>$$S = XWY^{T},$$<br>其中的$X$和$Y$是$d \times n$的矩阵，对应的列分别为$x_{i}$和$y_{i}$,$W=diag(w_{1},w_{2},…,w_{n})$。 </li>
+<li>对协方差矩阵进行SVD分解$S=U\Sigma  V^{T}$，旋转矩阵为：<br>$$R = V\begin{pmatrix}<br>1  &amp;  &amp;  &amp; &amp;\\<br>&amp;  1  &amp;  &amp; &amp;\\<br>&amp;  &amp;  \ddots   &amp; &amp;\\<br>&amp;  &amp;  &amp;  1 \\<br>&amp;  &amp;  &amp;  &amp; det(VU^{T}))<br>\end{pmatrix}U^{T}$$</li>
+<li>计算最优平移向量：<br>$$t=\bar{q} - R \bar{p}$$</li>
+<li>最后粒子集合$Q$的目标位置为：<br>$$g_{i} = Rx_{i}+ \bar{q}$$</li>
+</ol>
+<h2 id="利用极分解求解"><a href="#利用极分解求解" class="headerlink" title="利用极分解求解"></a>利用极分解求解</h2><ol>
+<li>计算两个粒子集合的质心：<br>$$\bar{p}=\frac{\sum_{i=1}^{n} w_{i}p_{i}}{\sum_{i=1}^{n} w_{i}},\bar{q}=\frac{\sum_{i=1}^{n} w_{i}q_{i}}{\sum_{i=1}^{n} w_{i}}$$</li>
+<li>计算局部坐标:<br>$$x_{i}:=p_{i}-\bar{p},y_{i}:=q_{i}-\bar{q}$$</li>
+<li>计算出$d\times d$协方差矩阵:<br>$$A= \sum_{1}^{n}m_{i}p_{i}q_{i}^{T}(\sum_{1}^{n}m_{i}q_{i}q_{i}^{T})^{-1}=A_{pq}A_{qq}$$</li>
+<li>对$A_{pq}$进行<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Polar_decomposition">极分解</a>(Polar Decomposition)<br>$$A_{pq} = RS, S= \sqrt{A_{pq}^{T}A_{pq}}$$<br>$$R = A_{pq}S^{-1}$$</li>
+<li>最后粒子集合$Q$的目标位置为：<br>$$g_{i} = Rx_{i} + \bar{q}$$</li>
+</ol>
+<p><strong>Note</strong>: 矩阵的平方根求法？<br>例如：$P = \sqrt{A^{T}A}$</p>
+<ol>
+<li>SVD分解<br>$$B=A^{T}A = V \Sigma V^{-1}=V \begin{pmatrix}<br>a_{11} &amp;  &amp;  &amp; \\<br>&amp;  a_{22}&amp;  &amp; \\<br>&amp;  &amp;  \ddots&amp; \\<br>&amp;  &amp;  &amp; a_{nn}<br>\end{pmatrix}V^{-1}$$</li>
+<li>得出平方根<br>$$P = \sqrt{B} = V \begin{pmatrix}<br>\sqrt{a_{11}} &amp;  &amp;  &amp; \\<br>&amp;  \sqrt{a_{22}}&amp;  &amp; \\<br>&amp;  &amp;  \ddots&amp; \\<br>&amp;  &amp;  &amp; \sqrt{a_{nn}}<br>\end{pmatrix}V^{-1}$$</li>
+</ol>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="http://101.96.8.165/igl.ethz.ch/projects/ARAP/svd_rot.pdf">Least-Squares Rigid Motion Using SVD</a><br><a target="_blank" rel="noopener" href="http://matthias-mueller-fischer.ch/publications/MeshlessDeformations_SIG05.pdf">Meshless Deformations Based on Shape Matching</a></p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

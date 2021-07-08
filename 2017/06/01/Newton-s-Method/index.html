@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Newton&#39;s  Method - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=数学>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Newton&#39;s  Method</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2017-06-01</span>
+  </div>
+  <div class="post-content">
+    <p>今天终于弄懂了牛顿法，之前在论文中总是看到牛顿法要用到<code>Hessian Matrix</code>，而且每次迭代都要重新计算。所以很不理解，这次看了一下<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=42zJ5xrdOqo">Video</a>才明白。</p>
+<span id="more"></span>
+
+<h1 id="一维解释"><a href="#一维解释" class="headerlink" title="一维解释"></a>一维解释</h1><h2 id="zero-finding-problem"><a href="#zero-finding-problem" class="headerlink" title="zero-finding problem"></a>zero-finding problem</h2><p>我最初接触牛顿法是在大学选修的一门课《数值分析》里见到的，原理是很简单的。</p>
+<p><img src="/image/NewtonIteration_Ani.gif" alt="f"></p>
+<p><strong>问题描述</strong>：一个多项式$f(x)$，如何求$x$使得$f(x)=0$。<br><strong>Newton’s Method</strong>:</p>
+<ol>
+<li>首先我们知道过一点$(x_{t},f(x_{t})$直线方程为$$y-f(x_{t})={f}’(x_{t})(x-x_{t})$$</li>
+<li>该直线与$x$轴的交点(即$y=0$)处，$x = x_{t} - \frac{f(x_{t})}{f^{‘}(x_{t})}$</li>
+</ol>
+<p>其实这就是Newton’s method。利用切线与$x$轴的交点一点一点逼近使得函数值$f(x)=0$的$x$。</p>
+<h1 id="多维解释"><a href="#多维解释" class="headerlink" title="多维解释"></a>多维解释</h1><p>一般Newton’s method用在优化问题上，优化问题的目标函数一般就是非线性的。<br>此时，对目标函数在$x=a$处进行泰勒展开<br>$$f(x) = f(a) + g^{T}(x-a)+\frac{1}{2} (x-a)^{T} H (x-a)$$<br>对上式变形得到：<br>$$f(x) = \frac{1}{2} x^{T} H x + (g-Ha)^{T} x + c$$<br>其中$g = \bigtriangledown f(a)$:gradient matrix, $H = \bigtriangledown^{2}f(a)$: Hessian matrix<br>对$f(x)$求导得到：<br>$${f}’(x) = Hx + (g-Ha) = H(x-a) + g$$<br>对$f(x)$二次求导得到：<br>$${f}’’(x)    =H$$<br>所以在$x=a$附近，要找到最小值的话需要$f(x)$的一阶导数为$0$。<br>即：<br>$$Hx + g -Ha = 0$$<br>$$x = a - H^{-1}g$$<br>但是这样我们得到的可能只是局部最小值，因为不知道函数是不是凸函数。要保证函数为凸，则Hessian Matrix必须是<strong>半正定</strong>的。</p>
+<h2 id="Algorithm"><a href="#Algorithm" class="headerlink" title="Algorithm"></a>Algorithm</h2><p>对于一个Scaler function$f(x):\Re ^{n}\rightarrow \Re$，要找到极小值点</p>
+<ol>
+<li>设置初始值$x_{t}$</li>
+<li>计算$f(x)$对应的gradient matrix:$g$ 和 Hessian matrix:$H$</li>
+<li>更新:$x_{t+1} = x_{t} - H^{-1}g$</li>
+</ol>
+<p><strong>注意</strong>：</p>
+<ol>
+<li>Hessian matrix 可能是非正定矩阵，导致不可逆</li>
+<li>针对问题1，可以不用求Hessian matrix的逆，而是直接求$Hy=g$,从而得出$x_{t+1} = x_{t} - y$</li>
+<li>或者直接写成$x_{t+1} = x_{t} + \alpha_{t} y$ <a href="#index">Quasi-Newton method</a></li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Newton’s method优点：</p>
+<ol>
+<li>相当快,二阶收敛</li>
+<li>稍微修改一下就可以成为下降法(找最小值而非驻点)<br>Newton’s method缺点：</li>
+<li>需要计算二阶导(Hessian matrix)，有时候二阶导很难算</li>
+<li>标准求解器求解$H(x_{k})y=-\bigtriangledown f(x_{k})$的复杂度为$O(n^{3})$，太费时。而且还需要存储Hessian matrix,空间复杂度$O(n^{2})$。</li>
+</ol>
+<p>共轭梯度法解决了上面的问题，但是收敛速度变慢。与共轭梯度类似的方法需要”line search”算法，一般在求解二次目标函数的时候性能最好。</p>
+<p>这时候，就有了拟牛顿法(Quasi-Newton method),这一种非约束非线性优化方法。不仅具有良好的收敛属性，而且不需要计算Hessian matrix。</p>
+<h1 id="Quasi-Newton-methodrr"><a href="#Quasi-Newton-methodrr" class="headerlink" title="Quasi-Newton methodrr"></a>Quasi-Newton methodrr</h1><p>拟牛顿法同样是迭代算法，包含”line search”操作，每次迭代只需要需要计算$f$和$\bigtriangledown f$。</p>
+<p>其实<strong>各种方法之间的本质区别</strong>是”search direction”的选择。</p>
+<p>拟牛顿法的关键也是如何求一个矩阵$H_{k}$，这个矩阵是$H^{-1}(x_{k})$的近似，简称近似逆Hessian矩阵。牛顿法里面需要求解$x_{k+1} =x_{k}-H^{-1}(x_{k}) \bigtriangledown f(x_{k}) $，而拟牛顿法是这样的：$x_{k+1} =x_{k} - \alpha H_{k} \bigtriangledown f(x_{k})$</p>
+<h2 id="近似逆Hessian矩阵"><a href="#近似逆Hessian矩阵" class="headerlink" title="近似逆Hessian矩阵"></a>近似逆Hessian矩阵</h2><p>近似Hessian矩阵$H_{k+1}$需要满足几个要求：</p>
+<ol>
+<li>对称性</li>
+<li>Quasi-Newton Condition:<br>$$\Delta x_{i} = H_{k+1} \Delta g_{i}$$<br>其中$ \Delta x_{i} = x_{i+1} - x_{i}, \Delta g_{i} = \bigtriangledown f(x_{i+1})-\bigtriangledown f(x_{i})$</li>
+<li>正定(Positive-Definiteness)</li>
+</ol>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>求目标函数$f(x)=\frac{1}{2}x^{T}Hx + x^{T}b$的最小值，其中<br>$$H=\begin{bmatrix}<br> 3&amp;1 \\<br> 1&amp;2<br>\end{bmatrix},<br>b = \begin{bmatrix}<br>1\\<br>2<br>\end{bmatrix}.<br>$$<br>初始值$x_{0}=[2,1]^{T}$,$H_{0}$是$2 \times 2$单位阵。</p>
+<ol>
+<li>得出$h_{0}=-H_{0}\bigtriangledown f(x_{0})=[-8,-6]^{T}$</li>
+<li>line search 获得$t$使得$f(x_{0}+th_{0})=180t^{2}-100t+18$最小，得到$t=5/18$</li>
+<li>$x_{1} = x_{0} + \frac{5}{8}h_{0}=[-2/9,-2/3]^{T}$.</li>
+<li>此时需要更新近似逆Hessian矩阵：<br>$$H=\begin{bmatrix}<br>h_{11}&amp;h_{12} \<br>h_{12}&amp;h_{22}<br>\end{bmatrix},<br>\Delta x_{0}=x_{1}-x_{0}=[-20/9,-5/3]^{T},<br>\Delta g_{0}=\bigtriangledown f(x_{1})-\bigtriangledown f(x_{0})=[-25/3,-50/9]^{T}.<br>$$<br>由Quasi-Newton condition<br>$$-\frac{25}{3}h_{11}-\frac{50}{9}h_{12}=-\frac{20}{9},-\frac{25}{3}h_{12}-\frac{50}{9}h_{12}=-\frac{5}{3}$$<br>得出：<br>$$<br>H=\begin{bmatrix}<br>1&amp;-11/10 \\ </li>
+</ol>
+<p> -11/10&amp;39/20<br>\end{bmatrix},<br>$$<br>5. next iteration</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

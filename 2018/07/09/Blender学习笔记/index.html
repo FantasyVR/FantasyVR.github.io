@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Blender学习笔记 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=tech>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Blender学习笔记</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-07-09</span>
+  </div>
+  <div class="post-content">
+    <p>Blender 学习的笔记</p>
+<span id="more"></span>
+<h1 id="Part-1-User-Interface"><a href="#Part-1-User-Interface" class="headerlink" title="Part 1: User Interface"></a>Part 1: User Interface</h1><h2 id="80-20-Rules"><a href="#80-20-Rules" class="headerlink" title="80/20 Rules"></a>80/20 Rules</h2><ol>
+<li>modeling</li>
+<li>matrial</li>
+<li>lighting</li>
+</ol>
+<h2 id="界面"><a href="#界面" class="headerlink" title="界面"></a>界面</h2><ol>
+<li>File-New-Reload Start-Up file可以显示最初的界面</li>
+<li>Number Pad (小键盘)： 左视图，俯视图等</li>
+<li>Mouse+ middle(旋转)， Shift+Mouse(middle) 平移</li>
+<li>Mouse(right) :选择</li>
+<li>选择物体+Numer Pad(.) 可以以某个物体为中心旋转</li>
+</ol>
+<h2 id="物体"><a href="#物体" class="headerlink" title="物体"></a>物体</h2><p>创建物体： shift+a (Mesh,Curve,Surface,Metaball…)<br>搜索： space + keyworrds<br>Animation: Alt+A</p>
+<h2 id="创建一个燃烧的猴头"><a href="#创建一个燃烧的猴头" class="headerlink" title="创建一个燃烧的猴头"></a>创建一个燃烧的猴头</h2><ol>
+<li>Shift+A 选择Mesh-Monkey</li>
+<li>Space 搜索 Smoke选择 Quick Smoke</li>
+<li>Alt + A 开始动画</li>
+<li>可以在Property面板的Physics控制面板里选择烟的分辨率</li>
+<li>鼠标右键选择猴头，Flow里面可以选择Flow Type: Fire/Fire+Smoke/Smoke等效果。</li>
+</ol>
+<h1 id="Part-2-Moving-Rotating-Scaling"><a href="#Part-2-Moving-Rotating-Scaling" class="headerlink" title="Part 2: Moving, Rotating, Scaling"></a>Part 2: Moving, Rotating, Scaling</h1><h2 id="Scaling"><a href="#Scaling" class="headerlink" title="Scaling"></a>Scaling</h2><ol>
+<li>按住S键， Ctrl（快） 和 Shift（慢） 可以控制缩放的速度</li>
+</ol>
+<h2 id="Moving"><a href="#Moving" class="headerlink" title="Moving"></a>Moving</h2><ol>
+<li>按G键，物体就可以跟着鼠标移动</li>
+<li>按G键，然后再按x/y/z，物体就在x/y/z轴上移动</li>
+<li>按G键，按住鼠标Middle键，物体就可以在x/y/z上移动</li>
+<li>按住鼠标左键可以直接移动物体</li>
+</ol>
+<h2 id="Rotating"><a href="#Rotating" class="headerlink" title="Rotating"></a>Rotating</h2><ol>
+<li>按R键，鼠标控制旋转</li>
+<li>按R键，按x/y/z，物体就绕着x/y/z轴旋转</li>
+</ol>
+<h2 id="如何将变换设置成Identity"><a href="#如何将变换设置成Identity" class="headerlink" title="如何将变换设置成Identity?"></a>如何将变换设置成Identity?</h2><ul>
+<li>Ctrl + A 然后apply scale/rotation/transltion</li>
+</ul>
+<h2 id="一个运动的圆圆圈"><a href="#一个运动的圆圆圈" class="headerlink" title="一个运动的圆圆圈"></a>一个运动的圆圆圈</h2><ol>
+<li>Shift + A 选择 mesh + torus</li>
+<li>Add Modifier (subdivision + wave)</li>
+</ol>
+<p>subdivision modifier 可以增加物体的光滑程度，以后也便于修改<br>wave 可以让物体运动起来（Alt+A开启动画）</p>
+<h1 id="Part-3-Edit-Mode"><a href="#Part-3-Edit-Mode" class="headerlink" title="Part 3: Edit Mode"></a>Part 3: Edit Mode</h1><p>按Tab键可以进入Edit Mode</p>
+<p>vertex 模式</p>
+<ol>
+<li>鼠标右键选择vertex</li>
+<li>Shift + 鼠标右键可以多选</li>
+<li>Alt   + 鼠标右键可以选 一圈(row)Edge  (也叫Edge Loop)</li>
+<li>选择之后按住G可以移动某个primatives</li>
+<li>加入一些Bumps： 按O键可以进入Propotional Editing, 右键可以移动选择到vertex/edge/face周围的部分。</li>
+<li>第五步的影响范围可以 Mouse Middle来放缩大小。</li>
+</ol>
+<h2 id="选择"><a href="#选择" class="headerlink" title="选择"></a>选择</h2><ul>
+<li><p>按住b,然后鼠标左键选择</p>
+</li>
+<li><p>按住b,然后鼠标中间反选择</p>
+</li>
+<li><p>按住a,可以选择物体所有的primatives</p>
+</li>
+<li><p>按住c,可以选择圆圈里的primatives，圆圈的大小鼠标中间放缩可以调节。按住鼠标中间移动可以反选择。</p>
+</li>
+<li><p>按住z,可以进入wireframe格式 </p>
+</li>
+</ul>
+<h2 id="创建甜甜圈"><a href="#创建甜甜圈" class="headerlink" title="创建甜甜圈"></a>创建甜甜圈</h2><ol>
+<li>添加Torus</li>
+<li>选择上面一般网格（alt+shift+鼠标左键）或者（b+前视图选择上半部分）</li>
+<li>Shift + D 可以复制刚才那上半部分。 鼠标左键移动，亦可移动上半部分。按Esc可以让上半部分恢复到原来的位置</li>
+<li>如何区分复制部分和原来的部分<br>答：选择未复制/复制 部分的一点，按L。可以显示与改点Link的物体。 Ctrl + L : select linked all</li>
+</ol>
+<h2 id="最后的例子：无限的torus"><a href="#最后的例子：无限的torus" class="headerlink" title="最后的例子：无限的torus"></a>最后的例子：无限的torus</h2><ol>
+<li>创建一个torus</li>
+<li>Add modifiers- Array 数量选择40，取消Relative offset,选择Object Offset 中的Empty</li>
+<li>创建Empty里的Plain Axis</li>
+<li>对torus进行放缩和旋转就可以看到很奇妙的现象了。</li>
+</ol>
+<h1 id="Part-4-Material-Nodes"><a href="#Part-4-Material-Nodes" class="headerlink" title="Part 4: Material Nodes"></a>Part 4: Material Nodes</h1><p>Color, Shading like real world<br>Material Node Editor<br>上一节我们能够做出一个甜甜圈了，这时候在property面板有个Reander按钮，如果我们点击Reander按钮，就可以看到渲染之后的场景。</p>
+<p>在Blender最上面的Panel我们可以选择Reander引擎。里面的选择有：Blender Render, Cycles Render, Blender Game</p>
+<p>在最下方的Panel可以选择Slot,显示不同Render引擎渲染出的效果。按J键，可以在slot之间进行变换。</p>
+<p>按Esc,可以从渲染面板中退出来。</p>
+<h2 id="隐藏"><a href="#隐藏" class="headerlink" title="隐藏"></a>隐藏</h2><ul>
+<li>Object Mode, 鼠标有右键选择物体，然后按H键。 </li>
+<li>按Alt+H, 显示出来所有隐藏的物体。</li>
+</ul>
+<h2 id="Material"><a href="#Material" class="headerlink" title="Material"></a>Material</h2><p>在Property面板里面有Material图标，点击之后可以在里面添加新的material.(需要注意的是：选择Cycles Render和Blender Render出现的选项是不同的。)</p>
+<blockquote>
+<p>如果添加了Materials之后，每次都Render出来看效果调试速度太慢了。我们可以在Object Model左侧选择Rendered选项，每次只要Materials改变了设置，效果直接就出来了。可以按shift+z从其他模式切换到Rendered模式。</p>
+</blockquote>
+<p>如果物体的表面渲染出来不平滑，可以选择smooth。</p>
+<h2 id="Material-Node-Editor"><a href="#Material-Node-Editor" class="headerlink" title="Material Node Editor"></a>Material Node Editor</h2><p>之前设置Material要么简单的设置Diffuse BSDF,要么Gloss BSDF。一般是把他们结合在一起，是的Diffuse, Reflection等等效果叠加在一下来表示物体表面材质属性。</p>
+<h2 id="如何进入Material-Node-Editor"><a href="#如何进入Material-Node-Editor" class="headerlink" title="如何进入Material Node Editor"></a>如何进入Material Node Editor</h2><ul>
+<li><p>在左下角有个Cube图标，单击之后进入Node Editor</p>
+</li>
+<li><p>每个Node都有输入输出，颜色相同的可以相连</p>
+</li>
+<li><p><code>Shift + A</code> 可以添加shader,texture, shader等等</p>
+</li>
+</ul>
+<h1 id="Part-5-Modeling"><a href="#Part-5-Modeling" class="headerlink" title="Part 5: Modeling"></a>Part 5: Modeling</h1><h1 id="Part-6-Texturing"><a href="#Part-6-Texturing" class="headerlink" title="Part 6: Texturing"></a>Part 6: Texturing</h1><h1 id="Part-7-Particles"><a href="#Part-7-Particles" class="headerlink" title="Part 7: Particles"></a>Part 7: Particles</h1><h1 id="Part-8-Lighting"><a href="#Part-8-Lighting" class="headerlink" title="Part 8: Lighting"></a>Part 8: Lighting</h1><h1 id="Part-9-Rendering-and-Compositing"><a href="#Part-9-Rendering-and-Compositing" class="headerlink" title="Part 9: Rendering and Compositing"></a>Part 9: Rendering and Compositing</h1><h1 id="平常我的贴图步骤"><a href="#平常我的贴图步骤" class="headerlink" title="平常我的贴图步骤"></a>平常我的贴图步骤</h1><ol>
+<li>导入文件</li>
+<li>在<code>edit mode</code>下，按c来快速选择需要切割的地方</li>
+<li>按 <code>Ctrl+E</code> 选择 <code>make seam</code></li>
+<li>按 <code>a</code>两次，全选整个网格，按<code>u</code>(uv mapping)选择<code>unwrap</code>。</li>
+<li>打开<code>UV/Image Editor</code></li>
+<li>渲染引擎选择<code>Cycles Render</code></li>
+<li>新建Material，<code>Color</code>选项选择<code>Image Texture</code>，导入纹理图片</li>
+<li>在<code>UV/Image Editor</code>中选择纹理图片，并且里面有切割好的网格</li>
+<li>选择某一部分的网格中一点，按住<code>l</code>可以将和网格连在一起的全选，然后可以进行旋转平移放缩的操作。</li>
+<li>在<code>3D view</code>可以按<code>shift + z</code>来显示渲染出来的效果</li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/tech/" rel="tag">tech</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>PBD再推演 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=物理仿真>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">PBD再推演</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2019-06-29</span>
+  </div>
+  <div class="post-content">
+    <p>根据高斯最小二乘约束法则，我再一次推演一下PBD, 推演过程中所有向量都是列向量，梯度的求解也是列优先。</p>
+<span id="more"></span>
+<p>由高斯最小二乘约束法则，我们可以假设物体是一个满足一定约束的运动，用数学的形式如下：<br>$$<br>\begin{matrix}<br> \mathbf{x}^{n+1} = \min{\frac{1}{2h^2}\Delta\mathbf{x}^T\mathbf{M}\Delta \mathbf{x}}  \<br> s.t. \quad C(\mathbf{x}^{n+1})=0<br>\end{matrix}<br>$$<br>因为$C(\mathbf{x}^{n+1})=0$是非线性的，所以需要用泰勒公式线性化，得到：<br>$$C(\mathbf{x}^{n+1})= C(\mathbf{x}^n) + \nabla^{T}C(x^n) \Delta \mathbf{x}$$</p>
+<p>然后，我们使用拉格朗日乘子法来求解约束：<br>$$L(\Delta\mathbf{x},\lambda) = \frac{1}{2h^2}\Delta\mathbf{x}^T\mathbf{M}\Delta \mathbf{x} + \lambda \cdot (C(\mathbf{x}^n) + \nabla^{T}C(\mathbf{x}^n) \Delta \mathbf{x})$$</p>
+<p>分别对$\Delta\mathbf{x},\lambda$求梯度得到：<br>$$\frac{\partial L}{\partial \Delta\mathbf{x}} = \frac{\mathbf{M}}{h^2}\Delta \mathbf{x} +  \nabla C(\mathbf{x}^n) \lambda= 0$$<br>$$\frac{\partial L}{\partial \lambda} = C(\mathbf{x}^n) + \nabla^{T}C(x^n) \Delta \mathbf{x} = 0$$<br>化成矩阵表示的形式：<br>$$<br>\begin{bmatrix}<br>\frac{\mathbf{M}}{h^2} &amp; \nabla C\<br>\nabla^{T} C &amp; 0<br>\end{bmatrix}<br>\begin{bmatrix}<br> \Delta \mathbf{x} \\<br> \lambda<br>\end{bmatrix} =<br>\begin{bmatrix}<br>\mathbf{0} \<br>-C(\mathbf{x}^{n})<br>\end{bmatrix}<br>$$<br>对矩阵$\mathbf{M}$的Schur complement（舒尔补）可以得到<br>$$\lambda = \frac{h^2 C(\mathbf{x}^{n})}{\nabla^{T}C\mathbf{M}^{-1}\nabla C}$$<br>将$\lambda$代入到$\frac{\partial L}{\partial \Delta\mathbf{x}}$ 中可以得到：<br>$$\Delta \mathbf{x} = -\mathbf{M}^{-1} \nabla C(x^n) \lambda$$</p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

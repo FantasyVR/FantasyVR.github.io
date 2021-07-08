@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>使用SVD进行刚体移动的最小二乘法 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=math>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">使用SVD进行刚体移动的最小二乘法</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-07-12</span>
+  </div>
+  <div class="post-content">
+    <p>这篇文章主要讲述如何将两个点云通过旋转和平移得到最佳的拟合。</p>
+<p><strong>Keywords</strong>: <code>Shape matching</code>, <code>rigid aligment</code>, <code>rotation</code>, <code>SVD</code></p>
+<span id="more"></span>
+
+<h1 id="问题陈述"><a href="#问题陈述" class="headerlink" title="问题陈述"></a>问题陈述</h1><p>令$P=\left \{ p_{1},p_{2},…,p_{n} \right \}$和$Q=\left \{ q_{1},q_{2},…,q_{n} \right \}$分别为$d$维空间的点集。<br>我们希望通过刚体变换能够最好的拟合两个点集，是两个点集对齐。一般就是使用最小二乘法，比如，我们需要找到一个旋转矩阵$R$和平移向量$\mathbf{t}$来满足$(1)$式子：<br>$$\begin{equation}\label{eq:1}<br> (R,\mathbf{t}) = \underset{R \in SO(d),t\in R^{d}}{argmin} \sum_{i=1}^{n} w_{i}\left || (Rp_{i}+t)-q_{i} \right ||^{2}      \tag{1}<br>\end{equation}$$<br>其中，$w_{i}&gt;0$是每一对点的权重。<br>最终的问题就是如何求出旋转矩阵$R$和平移向量$\mathbf{t}$。</p>
+<h1 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h1><ol>
+<li>计算两个点集的加权质心<br>$$\bar{p}=\frac{\sum_{i=1}^{n}w_{i}\mathbf{p}_{i}}{\sum_{i=1}^{n}w_{i}},\quad \bar{q}=\frac{\sum_{i=1}^{n}w_{i}\mathbf{q}_{i}}{\sum_{i=1}^{n}w_{i}}$$</li>
+<li>计算中心向量<br>$$x_{i} := \mathbf{p}_{i}-\bar{p},\quad y_{i} := \mathbf{q}_{i}-\bar{q}, \quad\quad i = 1,2,3,…,n.$$</li>
+<li>计算$d \times d$的协方差矩阵<br>$$S = XWY^{T},$$<br>其中$X$和$Y$分别是$d \times n$的矩阵，并且$x_{i}$,$y_{i}$分别为对应的列,$W = diag(w_{1},w_{2},…,w_{n})$。</li>
+<li>进行奇异值分解$S = U \Sigma  V^{T}$，则旋转矩阵为：<br>$$R= V<br>\begin{pmatrix}<br>1 &amp;  &amp;  &amp;  &amp; \\<br>&amp; 1 &amp; &amp;  &amp; \\<br>&amp;  &amp; \ddots  &amp;  &amp; \<br>&amp;  &amp;  &amp;  1&amp; \\<br>&amp;  &amp;  &amp;  &amp;det(VU^{T})<br>\end{pmatrix}<br>U^{T}$$</li>
+<li>平移矩阵为：<br>$$\mathbf{t} = \bar{q} - R\bar{p}$$</li>
+</ol>
+<h1 id="References"><a href="#References" class="headerlink" title="References:"></a>References:</h1><p>[1]Sorkine O. Least-squares rigid motion using svd[J]. Technical notes, 2009, 120(3).<br>文章链接：<a target="_blank" rel="noopener" href="http://www.igl.ethz.ch/projects/ARAP/svd_rot.pdf">here</a></p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/math/" rel="tag">math</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

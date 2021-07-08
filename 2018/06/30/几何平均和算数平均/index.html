@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>几何平均和算数平均 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=math>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">几何平均和算数平均</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-06-30</span>
+  </div>
+  <div class="post-content">
+    <p>今天记录一下几何平均和算数平均的概念，以备后用。</p>
+<span id="more"></span>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="算数平均"><a href="#算数平均" class="headerlink" title="算数平均"></a>算数平均</h2><p>我们最早基础的平均其实就是算数平均(Arithmetic Mean)。比如两个数4 和 12的算数平均是 $\frac{1}{2}(4+12) = 8$。</p>
+<h2 id="几何平均"><a href="#几何平均" class="headerlink" title="几何平均"></a>几何平均</h2><p>如果有两个数3 和 12， 他们的几何平均(Geometric Mean)就是$\sqrt{3 \times 12} = 6$</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>从上面我们可以看出来</p>
+<ul>
+<li>$ 12 - 8 = 8 - 4 = 4$, 也就是说$4, 8, 12$ 组成了一个<strong>等差数列</strong>。</li>
+<li>$ 12 \div 6 = 6 \div 3 = 2 $ 也就是说$ 3, 6, 12$ 组成了一个<strong>等比数列</strong>。</li>
+</ul>
+<h1 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h1><p>如果有$n$个数$x_{1},x_{2},…,x_{n}$,那么他们的<strong>算数平均</strong>$\bar{x}$的计算如下：<br>$$\bar{x} = \frac{1}{n}\sum_{i=1}{n} x_{i}$$</p>
+<p>他们的<strong>几何平均</strong>$\tilde{x} = (\prod_{i=1}^{n})^{\frac{1}{n}}=\sqrt[\frac{1}{n}]{x_{1}x_{2}\cdots  x_{n}}$</p>
+<h1 id="为什么叫几何平均"><a href="#为什么叫几何平均" class="headerlink" title="为什么叫几何平均"></a>为什么叫几何平均</h1><p>我们用下面这个图片来做个几何上的解释。<br><img src="/image/geomatric_mean.png" alt="geomatric means"><br>其中线段 $AB$ 为过圆心的直径，$C$ 为圆上一点，$D$ 为 $C$ 在线段 $AB$ 上的投影。线段 $AD$ 长度为 $a$, 线段 $BD$ 长度为 $b$, 线段 $CD$ 长度为 $c$。</p>
+<p>由勾股定理可得：</p>
+<ol>
+<li>$$AC = a^2 + c^2$$</li>
+<li>$$BC = b^2 + c^2$$</li>
+<li>$$AB = AC^2 + BC^2 = (a+b)^2$$</li>
+<li>$$a^2 + b^2 + 2ab = a^2 + b^2 + 2c^2$$</li>
+<li>$$c = \sqrt {ab}$$</li>
+</ol>
+<p>也就是说线段 $AD$ 和线段 $BD$ 长度的几何平均 就是 线段 $CD$ 的长度。</p>
+<h2 id="四元数的几何平均"><a href="#四元数的几何平均" class="headerlink" title="四元数的几何平均"></a>四元数的几何平均</h2><p>如果两个四元数 $q_{1}$ 和 $q_{2}$，那么他们的几何平均怎么算出来呢？<br>我的想法是：</p>
+<ol>
+<li>从式子 $q_{1} = q q_{2}$ 算出 $q$</li>
+<li>计算出 $sq = \sqrt{q}$ 作为等比数列的因子</li>
+<li>计算出几何平均$\tilde{q} = sq * q_{2} $</li>
+</ol>
+<p>从几何上解释：<br>刚体开始的朝向为$q_{2}$,然后旋转了$q$之后刚体的朝向为 $q_{1}$。假设刚体绕着$q$表示的某个旋转轴旋转了$2\theta$。那么几何平均$\tilde{q}$就表示刚体由朝向$q_{2}$绕旋转轴旋转$\theta$角度之后的朝向 。</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/math/" rel="tag">math</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

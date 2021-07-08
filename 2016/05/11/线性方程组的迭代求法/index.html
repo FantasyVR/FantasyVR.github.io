@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>线性方程组的迭代求法 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=数学>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">线性方程组的迭代求法</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-05-11</span>
+  </div>
+  <div class="post-content">
+    <p>迭代法是求解线性方程组的一种重要的方法，在工程中应用很广泛。</p>
+<span id="more"></span>
+<h2 id="雅克比-Jacobi-迭代法"><a href="#雅克比-Jacobi-迭代法" class="headerlink" title="雅克比(Jacobi)迭代法"></a>雅克比(Jacobi)迭代法</h2><p>设有线性方程组：<br>$$Ax=b $$</p>
+<p>$A=<br>\begin{bmatrix}<br>a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \\<br>a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n} \\<br>\vdots &amp; \vdots &amp; \ddots &amp; \vdots \<br>a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn}<br>\end{bmatrix}, \qquad<br>\mathbf{x} =<br>\begin{bmatrix}<br>x_{1} \\<br>x_2 \\<br>\vdots \\<br>x_n<br>\end{bmatrix} , \qquad<br>\mathbf{b} =<br>\begin{bmatrix}<br>b_{1} \\<br>b_2 \\<br>\vdots \\<br>b_n<br>\end{bmatrix}.<br>$</p>
+<p><strong>迭代求解式</strong>：<br>$$x^{k-1}=x^{k}+D^{-1}(b-Ax^{k})$$<br>其中：D为线性方程组系数矩阵对角元素组成的矩阵；<br><strong>迭代精度</strong>：<br>$$\left | x^{k+1}-x^{k} \right |\leqslant \varepsilon \left | x^{k} \right |$$<br><strong>注意</strong>：<br>使用迭代法求解时需要注意迭代的收敛性。当线性方程组中的系数矩阵A为严格对角优势矩阵，即A的每一行对角元素的绝对值都大于同行其他元素的绝对值之和，此时可证明Jacobi迭代法是收敛的。<br><strong>MATLAB 函数实现</strong></p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="params">[ x, count ]</span> = <span class="title">Jacobi</span><span class="params">( A,b,e)</span></span></span><br><span class="line"><span class="comment">%Jacobi Summary of this function goes here</span></span><br><span class="line"><span class="comment">%Function:雅克比迭代法求线性方程的解</span></span><br><span class="line"><span class="comment">%初始向量[0,0,0,0]&#x27;, x(k+1) = x(k) + inv(D) *  (b - A * x(k))</span></span><br><span class="line"><span class="comment">%误差控制： ||x(k+1)-x(k)|| &lt;= e * ||x(k)||, 本例使用二范数</span></span><br><span class="line"><span class="comment">%Input: </span></span><br><span class="line"><span class="comment">%   matA：线性系统的系数矩阵 n x n 阶</span></span><br><span class="line"><span class="comment">%   vecb: 线性系统的常数向量</span></span><br><span class="line"><span class="comment">%   e   : 精度要求</span></span><br><span class="line"><span class="comment">% Output:</span></span><br><span class="line"><span class="comment">%   vecx: 线性系统的近似解</span></span><br><span class="line"></span><br><span class="line">D = <span class="built_in">diag</span>(<span class="built_in">diag</span>(A));</span><br><span class="line">x0 = <span class="built_in">zeros</span>(<span class="built_in">size</span>(A,<span class="number">2</span>),<span class="number">1</span>);</span><br><span class="line">prex = x0;</span><br><span class="line">count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span></span><br><span class="line">    count = count + <span class="number">1</span>;</span><br><span class="line">    r = b - A * prex;</span><br><span class="line">    x = prex + D\r;</span><br><span class="line">    <span class="keyword">if</span>(norm(x-prex)&lt; e * norm(prex))</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    prex = x;</span><br><span class="line"><span class="keyword">end</span>  </span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="高斯-赛德尔-Gauss-Seidel-迭代法"><a href="#高斯-赛德尔-Gauss-Seidel-迭代法" class="headerlink" title="高斯-赛德尔(Gauss-Seidel)迭代法"></a>高斯-赛德尔(Gauss-Seidel)迭代法</h2><p>雅克比迭代法是在计算$x^{K+1}$的过程中采用上一步迭代结果$x^{k}$。而高斯-赛德尔迭代法充分利用新计算出来的分量来提高迭代解法的效率，即，在计算新的分量$x_{i}^{k+1}$时，已经计算出来的$x_{1}^{k+1},x_{2}^{k+1},…,x_{i-1}^{k+1}$可以拿来使用。</p>
+<p>线性方程组的系数矩阵$A$由下三角矩阵$L$,对角阵$D$,上三角矩阵$U$组成<br>$$A=L+D+U$$<br>其中<br>$D =<br>\begin{bmatrix}<br>a_{11} &amp; 0 &amp; \cdots &amp; 0 \<br>0 &amp; a_{22} &amp; \cdots &amp; 0 \\<br>\vdots &amp; \vdots &amp; \ddots &amp; \vdots \<br>0 &amp; 0 &amp; \cdots &amp; a_{nn}<br>\end{bmatrix}, \quad<br>L = \begin{bmatrix}<br>0 &amp; 0 &amp; \cdots &amp; 0 \\<br>a_{21} &amp; 0 &amp; \cdots &amp; 0 \\<br>\vdots &amp; \vdots &amp; \ddots &amp; \vdots \<br>a_{n1} &amp; a_{n2} &amp; \cdots &amp; 0<br>\end{bmatrix}, \quad<br>U = \begin{bmatrix}<br>0 &amp; a_{12} &amp; \cdots &amp; a_{1n} \\<br>0 &amp; 0 &amp; \cdots &amp; a_{2n} \\<br>\vdots &amp; \vdots &amp; \ddots &amp; \vdots \<br>0 &amp; 0 &amp; \cdots &amp; 0<br>\end{bmatrix}.<br>$</p>
+<p>迭代形式可写为<br>$$(L+D)x^{(k+1)}+Ux^{(k)}=b$$<br>从而得出高斯-赛德尔迭代形式<br>$$x^{(k+1)}=(L+D)^{-1}(b-Ux^{(k)})$$</p>
+<hr>
+<h2 id="超松弛迭代法"><a href="#超松弛迭代法" class="headerlink" title="超松弛迭代法"></a>超松弛迭代法</h2><p>逐次超松弛迭代法(succesive over relaxation method,简称SOR方法)是G-S迭代法的一种加速收敛的方法。其特点是适当选择一个松弛因子$\omega$，以加速迭代收敛过程。$\omega=1$时，是G-S迭代法，$\omega &lt; 1$时，是低松弛法，$\omega&gt;1$时，是SOR方法。加速迭代收敛一般就选取$\omega&gt;1$。</p>
+<p>线性方程组左右两端同时乘以$\omega$:<br>$$\omega(L+D+U)x=\omega b,\quad \Rightarrow (D+\omega L) \mathbf{x} = \omega \mathbf{b} - [\omega U + (\omega-1) D ] \mathbf{x} $$</p>
+<p>得出SOR方法的迭代形式：<br>$$\mathbf{x}^{(k+1)} = (D+\omega L)^{-1} \big(\omega \mathbf{b} - [\omega U + (\omega-1) D ] \mathbf{x}^{(k)}\big)=L_w \mathbf{x}^{(k)}+\mathbf{c},$$</p>
+<hr>
+<h2 id="共轭梯度法-Conjugate-Gradient-method"><a href="#共轭梯度法-Conjugate-Gradient-method" class="headerlink" title="共轭梯度法(Conjugate Gradient method)"></a>共轭梯度法(Conjugate Gradient method)</h2><p>共轭梯度法是求解线性方程组的一种有效的迭代解法，可以看做是由通常称为最速下降法的梯度法发展而来。下面先介绍梯度法。</p>
+<h3 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h3><p>上一节的线性方程组对应二次函数<br>$$f(x)=\frac{1}{2}x^{T}Ax-b^{T}x$$<br>的极值条件，用梯度法求解函数f(x)的极值问题可按以下步骤：<br>(1) 设x的初值$x0$<br>(2) 求$f(x)$在$x0$的梯度为<br> $$\frac{\partial f(x)}{\partial x}\mid_{x=x_{0}}=Ax_{0}-b$$</p>
+<p>(3) 沿梯度的负方向，即<br>    $$r_{0} = b - A x_{0}$$<br>进行一维搜索，寻找$f(x)$在此方向的最小值。步骤是：<br> (a) 设 $x_{1}=x_{0} + \alpha x_{0}$</p>
+<p> (b)将 $x_{1}$代入$f(x)$ ,得到</p>
+<p> $$f(x_{1})=\frac{1}{2}(x_{0} + \alpha_{0}r_{0})^{T}A(x_{0} + \alpha_{0}r_{0})-b^{T}(x_{0}+\alpha_{0}x_{0})$$<br> (c) 求$f(x_{1})$的最小值。即从$\frac {\partial f(x_{1})}{\partial \alpha_{0}}=0$得到<br> $$\alpha _{0} = \frac{b^{T}r_{0}-x_{0}^{T}}{r_{0}^{T}Ar_{0}}=\frac {r_{0}^{T}r_{0}}{r_{0}^{T}Ar_{0}}$$</p>
+<p>(4) 以$x_{1}$代替(1)中的$x_{0}$,重复上述(1)(2)(3)步骤的计算，直至<br>    $$\left | r_{k} \right | \leqslant \varepsilon _{1}\left | b \right | $$<br>    或者<br>    $$\left | x_{k+1}-x_{k} \right |\leqslant \varepsilon_{2} \left | x_{k} \right |$$<br>    其中$k$是迭代次数，$\varepsilon_{1}$和$\varepsilon_{2}$是规定的允许误差。<br>(5) 输出结果$x_{k+1}$.<br>从上述步骤可见，每次迭代是沿$f(x)$在$x_{k}(k=1,2,3…)$的梯度的负方向进行一维搜索，寻找使$f(x)$下降的最大值，所以通常称此法为<strong>最速下降法</strong>。但实际计算表明此法的迭代速度常常是不高的。</p>
+<h3 id="共轭梯度法"><a href="#共轭梯度法" class="headerlink" title="共轭梯度法"></a>共轭梯度法</h3><p>共轭梯度法简称CG方法。它和上述成为最速下降法的梯度法不同之处在于：每次一维搜索不是沿$f(x)$在$x_{k}$的梯度方向，而是沿与前一次搜索方向是关于系数矩阵$A$相互蒸饺的所谓共轭梯度方向。它的算法步骤是：<br>(1) 设$x$ 的初值$x_{0}$<br>(2) 计算$f(x)$在$x_{0}$的梯度<br>$$\frac{\partial f(x)}{\partial x}\mid_{x=x_{0}}=Ax_{0}-b$$</p>
+<p>(3) 令 $r_{0}=b-Ax_{0},p_{0}=r_{0}$<br>(4) 沿 $p_{0}$方向进行一维搜索，寻找$minf(x)$，即设<br>$$x_{1}=x_{0}+\alpha_{0}p_{0}=x_{0}+\alpha_{0}r_{0}$$<br>其中$\alpha_{0}$可从$\frac{\partial f(x_{1})}{\partial \alpha_{0}}=0$即有<br>$$\alpha_{0}=\frac{r_{0}^{T}r_{0}}{r_{0}^{T}Ar_{0}}$$<br>(5) 计算<br>$$r_{1}=b-Ax_{1}$$<br>(6) 令 $p_{1} = r_{1}+\beta_{0}p_{0}$,其中$\beta_{0}$由$p_{0}^{T}Ap_{1}=0$决定，从<br>$$p_{0}^{T}Ap_{1}=p_{0}^{T}Ar_{1}+\beta_{0}p_{0}^{T}Ap_{1}$$<br>(7) 沿$p_{1}$方向进行一维搜索，寻找$minf(x)$,即设<br>$$x_{2}=x_{1}+\alpha_{1}p_{1}$$<br>其中$\alpha_{1}$可从$\frac{\partial f(x_{2})}{\partial \alpha_{1}}$得到，即<br>$$\alpha_{1}=\frac{p_{1}^{T}r_{1}}{p_{1}^{T}Ap_{1}=0}$$<br>(8) 以$x_{2}$代替步骤(5)中的$x_{1}$,重复上述(5)(6)(7)步骤；继续进行迭代，直至满足收敛要求。</p>
+<p><strong>共轭梯度法的标准迭代公式如下</strong>：<br>(1) 设置$x$的初始向量$x_{0}$<br>(2) 计算 $$r_{0}=b-Ax_{0}$$ 并令 $p_{0}=r_{0}$<br>(3) 对于$(k=0,1,2,…)$进行如下迭代：<br>$$\alpha_{k}=\frac{r_{k}^{T}r_{k}}{p_{k}^{T}Ap_{k}}$$<br>$$x_{k+1}=x_{k}+\alpha_{k}p_{k}$$<br>$$r_{k+1} = r_{k} + \alpha _{k}p_{k}$$<br>$$\beta_{k}=\frac{r_{k+1}^{T}r_{k}}{r_{k}^{T}r_{k}}$$<br>$$p_{k+1}=r_{k+1}+\beta_{k}p_{k}$$</p>
+<p> <strong>MATLAB 函数实现</strong></p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="params">[ x ,count ]</span> = <span class="title">CG</span><span class="params">( A,b,e )</span></span></span><br><span class="line"><span class="comment">%共轭梯度法(Conjugate Gradient Method )</span></span><br><span class="line"><span class="comment">%设置x初始量x0 = prex</span></span><br><span class="line">x0 = <span class="built_in">zeros</span>(<span class="built_in">size</span>(A,<span class="number">2</span>),<span class="number">1</span>);</span><br><span class="line">prex = x0;</span><br><span class="line">r0 = b - A * prex;</span><br><span class="line">p0 = r0;</span><br><span class="line">prer = r0;</span><br><span class="line">prep = p0;</span><br><span class="line"><span class="comment">%进行如下迭代</span></span><br><span class="line">count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span></span><br><span class="line">    count = count + <span class="number">1</span>;</span><br><span class="line">    alpha = prer&#x27;* prer / (prep&#x27;* A * prep);</span><br><span class="line">    x = prex + alpha * prep;</span><br><span class="line">    r = prer - alpha * A * prep;</span><br><span class="line">    <span class="built_in">beta</span> = r&#x27;*r/(prer&#x27;*prer);</span><br><span class="line">    p = r + <span class="built_in">beta</span> * prep;</span><br><span class="line">    <span class="keyword">if</span>(norm(x-prex)&lt; e*norm(prex))</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    prex = x;</span><br><span class="line">    prer = r;</span><br><span class="line">    prep = p;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="预条件共轭梯度法"><a href="#预条件共轭梯度法" class="headerlink" title="预条件共轭梯度法"></a>预条件共轭梯度法</h3><p>预条件共轭梯度法(Preconditioned Conjugate Gradient Method),简称PCG方法，是加速共轭梯度法收敛的一种方法。因为所有迭代法的收敛速度都与表征系数矩阵性态的条件数(系数矩阵最大特征值与最小特征值之比)有关，此系数越大，收敛速度越慢。PCG方法是通过引入预条件矩阵$M$,使方程系数矩阵的条件数降低以达到提高收敛速度的目的。<br><strong>M的选取问题</strong></p>
+<ol>
+<li>$M=D=diag[a_{11},a_{22},a_{33},…a_{nn}]=D^{\frac{1}{2}}D^{\frac{1}{2}}$</li>
+<li>通常的做法是对$A$进行不完全三角分解(Cholesky factorization)$A=\tilde{L}\tilde{D}\tilde{L}^{T}-R$,其中$\tilde{L}$保持$A$的稀疏性，$\tilde{D}$的元素为正,$R$是余项。这是选取：<br> $$M = \tilde{L}\tilde{D}\tilde{L}^{T}$$</li>
+</ol>
+<p><strong>具体做法</strong>如下：<br>    引入一对称正定矩阵$M=W^{T}W$,使原方程转换为<br>    $$(W^{-T}AW^{-1})Wx=W^{-T}b$$<br>    或写成$$\hat{A}\hat{x}=\hat{b}$$</p>
+<p><strong>迭代公式</strong>表达如下：<br>(1) 设置$x$的初始向量$x_{0}$<br>(2) 计算 $r_{0}=b-Ax_{0}$<br>(3) 求解 $Mh_{0}=r_{0}$并令 $p_{0}=h_{0}$<br>(4) 对于$(k=0,1,2,…)$进行如下迭代：<br>$$\alpha_{k}=\frac{h_{k}^{T}r_{k}}{p_{k}^{T}Ap_{k}}$$<br>$$x_{k+1}=x_{k}+\alpha_{k}p_{k}$$<br>$$r_{k+1} = r_{k} + \alpha _{k}p_{k}$$<br>求解：<br>$$Mh_{k+1}=r_{k+1}$$<br>$$\beta_{k}=\frac{h_{k+1}^{T}r_{k}}{h_{k}^{T}r_{k}}$$<br>$$p_{k+1}=h_{k+1}+\beta_{k}p_{k}$$</p>
+<p><strong>MATLAB 函数实现</strong></p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="params">[ x ,count ]</span> = <span class="title">PCG</span><span class="params">( A,b,e )</span></span></span><br><span class="line"><span class="comment">%UNTITLED Summary of this function goes here</span></span><br><span class="line"><span class="comment">%   Detailed explanation goes here</span></span><br><span class="line"><span class="comment">%step 1: init x</span></span><br><span class="line">x0 = <span class="built_in">zeros</span>(<span class="built_in">size</span>(A,<span class="number">2</span>),<span class="number">1</span>);</span><br><span class="line">r0 = b - A * x0;</span><br><span class="line"><span class="comment">%预条件矩阵M,它使得方程系数矩阵的条件数降低，以达到提高收敛速度的目的。</span></span><br><span class="line"><span class="comment">%在本函数中M选择为A的对角线元素组成的矩阵。</span></span><br><span class="line"><span class="comment">%一般先对A做不完全三角分解 A= LDL&#x27;-R, M = LDL&#x27;;</span></span><br><span class="line">M = <span class="built_in">diag</span>(<span class="built_in">diag</span>(A));</span><br><span class="line">h0 = M\r0;</span><br><span class="line">p0 = r0;</span><br><span class="line"></span><br><span class="line">prex = x0;</span><br><span class="line">prer = r0;</span><br><span class="line">preh = h0;</span><br><span class="line">prep = p0;</span><br><span class="line"><span class="comment">%step 2: iterator</span></span><br><span class="line">count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span></span><br><span class="line">    count = count +<span class="number">1</span>;</span><br><span class="line">    alpha = (preh&#x27;*prer)/(prep&#x27;*A*prep);</span><br><span class="line">    x = prex + alpha * prep;</span><br><span class="line">    r = prer - alpha * A * prep;</span><br><span class="line">    h = M\r;</span><br><span class="line">    <span class="built_in">beta</span> = h&#x27;*r /(preh&#x27;*prer);</span><br><span class="line">    p = h + <span class="built_in">beta</span> * prep;</span><br><span class="line">    <span class="keyword">if</span>(norm(x-prex)&lt; e*norm(prex))</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    prex = x;</span><br><span class="line">    prer = r;</span><br><span class="line">    preh = h;</span><br><span class="line">    prep = p;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>

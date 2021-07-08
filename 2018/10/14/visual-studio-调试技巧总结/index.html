@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>visual studio 调试技巧总结 - Peng Yu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=code>
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Peng Yu" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">Peng Yu</a>
+    <div class="subtitle">To be a better me!</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">visual studio 调试技巧总结</h1>
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-10-14</span>
+  </div>
+  <div class="post-content">
+    <p>总结一下在项目中经常会用到的调试技巧，有些真是相见恨晚啊。</p>
+<span id="more"></span>
+
+<h1 id="修改变量值"><a href="#修改变量值" class="headerlink" title="修改变量值"></a>修改变量值</h1><p>调试过程中，触发某个断点之后，我们可以把鼠标放在某个变量上，此时会弹出一个数据框来显示变量的值，此时我们可以直接在这个数据框里填入我们想要的数值，然后继续运行。</p>
+<h1 id="设置条件断点"><a href="#设置条件断点" class="headerlink" title="设置条件断点"></a>设置条件断点</h1><p>最简单设置断点的方法就在用鼠标点一下代码的左侧。这样每次运行到这里都会触发断点。但是有时候我们不想每次都出发。比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int sum = 0;</span><br><span class="line">for(int i = 0;i &lt; 100; i++)</span><br><span class="line">    sum += i;</span><br></pre></td></tr></table></figure>
+<p>我们想在<code>i == 5</code>的时候在<code>for</code>语句那行出发断点，就可以这么设置：<br><img src="/image/conditionbp.png"><br>然后红色的圆就会出现一个十字架。</p>
+<h1 id="数组内容的查看"><a href="#数组内容的查看" class="headerlink" title="数组内容的查看"></a>数组内容的查看</h1><p>在代码里如果有如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int a[10] = &#123;1,2,3,4,5,6,7&#125;;</span><br><span class="line">int *b = a;</span><br></pre></td></tr></table></figure>
+<p>我们想查看指针<code>b</code>所指数组的所有数据，可以<code>watch</code>窗口里这样写：<code>b,10</code>。就可以查看数组里的内容了。</p>
+<h1 id="数据格式设定"><a href="#数据格式设定" class="headerlink" title="数据格式设定"></a>数据格式设定</h1><p>Visual studio默认情况下都不会以八进制，十六进制等等格式来显示数据，所以，如果你有这个需求的话，可以参考后面的文章：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/visualstudio/debugger/format-specifiers-in-cpp?view=vs-2017">Format specifiers in C++ in the Visual Studio debugger</a></p>
+<h1 id="Release-with-Debug-Info"><a href="#Release-with-Debug-Info" class="headerlink" title="Release with Debug Info"></a>Release with Debug Info</h1><p>如果你有个很大的程序的话，每次Debug你可能都要等个半天才能重新编译。如果你还是搞图形学的，调试个物理引擎里的Bug的话，有没有想死的感觉。反正我有啊。当我改了代码一个小小的地方，我多么想让它快点编译啊。<br>以前以为Release就是不能Debug的，后来发现。只要我们动动可爱的手指，该一下配置，就可以有几乎Release的速度，还能调试，简直不能更爽，有没有！？</p>
+<p>不过也有缺陷，那就是Release模式下Debug的画，有些变量会被优化掉，看不到他们的值，而且有时候显示的变量值是乱的，特别是数组啊，向量啊这些。</p>
+<p>具体的配置方法：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/cpp/build/reference/how-to-debug-a-release-build?view=vs-2017">here</a></p>
+<h1 id="自定义数据显示格式"><a href="#自定义数据显示格式" class="headerlink" title="自定义数据显示格式"></a>自定义数据显示格式</h1><p><a target="_blank" rel="noopener" href="http://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen</a>是一个数学库。在调试的过程中，看到一个变量如下图：<br><img src="/image/eigen_var.png" alt="Eigen variable"><br>我们发现很多无用的内容，我们只关注<code>array</code>里面的数字，也就是我用红框框出来的。那么Visual Studio是允许我们自定义变量的显示格式的，不过这个需要我们自己写个插件（见参考1）。<br>不过幸运的是，Eigen这个大型的项目已经给我们准备好了，我们把Eigen库里写好的<a target="_blank" rel="noopener" href="https://github.com/eigenteam/eigen-git-mirror/blob/master/debug/msvc/eigen.natvis">插件</a>放到特定的位置（见参考2），重新启动Visual Studio开始调试，就可以看到没用的内容消失了。<br>如下图所示:<br><img src="/image/eigen_var_simple.png" alt="Eigen simple variable"><br>[<strong>参考</strong>]：<br>1.<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/visualstudio/debugger/create-custom-visualizers-of-data?view=vs-2017">Create Custom Visualizers of Data</a><br>2. <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/visualstudio/debugger/how-to-install-a-visualizer?view=vs-2017">How to: Install a Visualizer</a></p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/code/" rel="tag">code</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2021
+  <span class="author">
+    Peng Yu
+  </span>
+</footer>
+    </div>
+  </body>
+</html>
