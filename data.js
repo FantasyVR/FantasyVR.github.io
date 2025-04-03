@@ -19,7 +19,7 @@ const websiteData = {
     "profile": {
         "zh": {
             "name": "禹鹏",
-            "title": "博士后",
+            "title": "博士后 | 北航",
             "email": "pengyu@buaa.edu.cn",
             "linkedin": "https://www.linkedin.com/in/peng-yu-03262a59/",
             "github": "https://github.com/FantasyVR",
@@ -27,7 +27,7 @@ const websiteData = {
         },
         "en": {
             "name": "Dr. Peng Yu",
-            "title": "Postdoctoral Researcher",
+            "title": "Postdoctoral Researcher | Beihang University",
             "email": "pengyu@buaa.edu.cn",
             "linkedin": "https://www.linkedin.com/in/peng-yu-03262a59/",
             "github": "https://github.com/FantasyVR",
@@ -80,14 +80,14 @@ const websiteData = {
     // 出版物
     "publications": {
         "zh": {
-            "title": "出版物",
+            "title": "论文列表",
             "corresponding_note": "* 通讯作者",
             "cofirst_note": "† 共同第一作者"
         },
         "en": {
             "title": "Publications",
-            "corresponding_note": "* Corresponding author",
-            "cofirst_note": "† Co-first author"
+            "corresponding_note": "* denotes corresponding author",
+            "cofirst_note": "† denotes equal contribution"
         },
         "items": [
             {
@@ -121,7 +121,8 @@ const websiteData = {
                 "links": {
                     "pdf": "PDF/tvc2024.pdf",
                     "video": "Video/tvc2024.mp4",
-                    "bibtex": "bib/tvc2024.bib"
+                    "bibtex": "bib/tvc2024.bib",
+                    "slides": "PPT/CGI2024.pdf"
                 }
             },
             {
@@ -191,7 +192,8 @@ const websiteData = {
                 "thumbnail": "images/CAVW2020.jpg",
                 "links": {
                     "pdf": "PDF/CAVW2020.pdf",
-                    "bibtex": "bib/CAVW2020.bib"
+                    "bibtex": "bib/CAVW2020.bib",
+                    "slides": "PPT/CASA2020.pdf"
                 }
             },
             {
@@ -210,7 +212,7 @@ const websiteData = {
                 "links": {
                     "pdf": "PDF/IEEEVR2020.pdf",
                     "bibtex": "bib/IEEEVR2020.bib",
-                    "slides": "PPT/IEEEVR2020.pptx"
+                    "slides": "PPT/IEEEVR2020.pdf"
                 }
             }
         ]

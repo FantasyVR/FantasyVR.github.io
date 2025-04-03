@@ -269,8 +269,8 @@ a {
 }
 
 .publication-thumbnail {
-    flex: 0 0 120px;
-    height: 80px;
+    flex: 0 0 160px;
+    height: 90px;
     border-radius: 5px;
     overflow: hidden;
     border: 1px solid var(--border-color);
@@ -290,9 +290,7 @@ a {
 
 .publication-details {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    display: block;
 }
 
 .publication-title {
@@ -329,7 +327,7 @@ a {
 .publication-links {
     display: flex;
     gap: 1rem;
-    margin-top: 0.3rem;
+    margin-top: 0.5rem;
 }
 
 .publication-link {
