@@ -54,6 +54,15 @@ function updateContent(language) {
     // 更新出版物
     updatePublications(language);
     
+    // 更新报告
+    updatePresentations(language);
+    
+    // 更新学术服务
+    updateServices(language);
+    
+    // 更新项目
+    updateProjects(language);
+    
     // 更新荣誉与奖项
     updateAwards(language);
     
@@ -72,7 +81,10 @@ function updateNavigation(language) {
     navLinks[0].textContent = navData.about;
     navLinks[1].textContent = navData.news;
     navLinks[2].textContent = navData.publications;
-    navLinks[3].textContent = navData.awards;
+    navLinks[3].textContent = navData.presentations;
+    navLinks[4].textContent = navData.services;
+    navLinks[5].textContent = navData.projects;
+    navLinks[6].textContent = navData.awards;
 }
 
 // 更新个人信息
@@ -205,6 +217,14 @@ function updatePublications(language) {
         const venue = document.createElement('span');
         venue.className = 'publication-venue';
         venue.textContent = item.venue;
+        
+        // 添加备注（如果有）
+        if(item.note) {
+            const noteSpan = document.createElement('span');
+            noteSpan.className = 'publication-note';
+            noteSpan.textContent = ` (${item.note})`;
+            venue.appendChild(noteSpan);
+        }
 
         // 链接
         const linksDiv = document.createElement('div');
@@ -280,6 +300,87 @@ function updatePublications(language) {
         }
         sectionTitleElement.appendChild(notesContainer);
     }
+}
+
+// 更新报告列表
+function updatePresentations(language) {
+    const presentationsSection = document.getElementById('presentations');
+    const presentationsData = websiteData.presentations[language];
+    const presentationsList = presentationsSection.querySelector('.presentations-list');
+    
+    // 更新标题
+    presentationsSection.querySelector('.section-title').childNodes[2].textContent = presentationsData.title;
+    
+    // 清空并重新填充报告列表
+    presentationsList.innerHTML = '';
+    
+    presentationsData.items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="date">${item.date}</span> <span class="presentation-venue">${item.venue}</span> <span class="presentation-title">${item.title}</span>`;
+        presentationsList.appendChild(li);
+    });
+}
+
+// 更新学术服务列表
+function updateServices(language) {
+    const servicesSection = document.getElementById('services');
+    const servicesData = websiteData.services[language];
+    const servicesList = servicesSection.querySelector('.services-list');
+    
+    // 更新标题
+    servicesSection.querySelector('.section-title').childNodes[2].textContent = servicesData.title;
+    
+    // 清空并重新填充学术服务列表
+    servicesList.innerHTML = '';
+    
+    servicesData.items.forEach(item => {
+        const li = document.createElement('li');
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'service-name';
+        nameSpan.textContent = item.name;
+        
+        const yearsSpan = document.createElement('span');
+        yearsSpan.className = 'service-years';
+        yearsSpan.textContent = item.years.join('/');
+        
+        li.appendChild(nameSpan);
+        li.appendChild(document.createTextNode(' '));
+        li.appendChild(yearsSpan);
+        
+        servicesList.appendChild(li);
+    });
+}
+
+// 更新项目列表
+function updateProjects(language) {
+    const projectsSection = document.getElementById('projects');
+    const projectsData = websiteData.projects[language];
+    const projectsList = projectsSection.querySelector('.projects-list');
+    
+    // 更新标题
+    projectsSection.querySelector('.section-title').childNodes[2].textContent = projectsData.title;
+    
+    // 清空并重新填充项目列表
+    projectsList.innerHTML = '';
+    
+    projectsData.items.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'project-item';
+        
+        li.innerHTML = `
+            <span class="project-institution">${item.institution}</span>, 
+            <span class="project-type">${item.type}</span>, 
+            <span class="project-name">${item.name}</span>, 
+            <span class="project-code">${item.code}</span>, 
+            <span class="project-period">${item.period}</span>, 
+            <span class="project-amount">${item.amount}</span>, 
+            <span class="project-status">${item.status}</span>, 
+            <span class="project-role">${item.role}</span>
+        `;
+        
+        projectsList.appendChild(li);
+    });
 }
 
 // 更新奖项列表

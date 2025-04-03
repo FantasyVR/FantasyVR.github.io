@@ -5,12 +5,18 @@ const websiteData = {
             "about": "关于我",
             "news": "新闻动态",
             "publications": "出版物",
+            "presentations": "报告",
+            "services": "学术服务",
+            "projects": "项目",
             "awards": "荣誉与奖项"
         },
         "en": {
             "about": "About Me",
             "news": "News",
             "publications": "Publications",
+            "presentations": "Presentations",
+            "services": "Academic Services",
+            "projects": "Projects",
             "awards": "Awards"
         }
     },
@@ -98,7 +104,7 @@ const websiteData = {
                     {"name": "Peng Yu", "corresponding": true, "bold": true},
                     {"name": "Aimin Hao"}
                 ],
-                "venue": "2024 IEEE International Symposium on Mixed and Augmented Reality Adjunct (ISMAR-Adjunct)",
+                "venue": "IEEE International Symposium on Mixed and Augmented Reality Adjunct (ISMAR-Adjunct), 2024",
                 "thumbnail": "images/ismar2024.jpeg",
                 "links": {
                     "pdf": "PDF/ismar2024.pdf",
@@ -172,8 +178,9 @@ const websiteData = {
                     {"name": "Aimin Hao"},
                     {"name": "Haipeng Wang"},
                 ],
-                "venue": "2021 IEEE Conference on Virtual Reality and 3D User Interfaces Abstracts and Workshops (VRW)",
+                "venue": "IEEE Conference on Virtual Reality and 3D User Interfaces Abstracts and Workshops (VRW), 2021",
                 "thumbnail": "images/IEEEVR2021.jpg",
+                "note": "Best Honorable Mention Posters",
                 "links": {
                     "pdf": "PDF/IEEEVR2021.pdf",
                     "bibtex": "bib/IEEEVR2021.bib"
@@ -243,6 +250,130 @@ const websiteData = {
                 {
                     "date": "2024",
                     "content": "Exemplary Teaching & Research Achievement (Key Virtual Teaching & Research Office, MoE Priority Areas) (Rank: 2/5)"
+                }
+            ]
+        }
+    },
+    
+    // 报告
+    "presentations": {
+        "zh": {
+            "title": "报告",
+            "items": [
+                {
+                    "date": "2024.1.17",
+                    "venue": "厦门大学计算机图形学与社交型机器人青年学者论坛",
+                    "title": "复杂手术操作实时交互仿真与量化评价方法研究"
+                }
+            ]
+        },
+        "en": {
+            "title": "Presentations",
+            "items": [
+                {
+                    "date": "2024.1.17",
+                    "venue": " Xiamen University's Forum for Emerging Scholars in CG & Social Robotics",
+                    "title": "Research on real-time interactive simulation and quantitative evaluation method of complex surgical operations"
+                }
+            ]
+        }
+    },
+    
+    // 学术服务
+    "services": {
+        "zh": {
+            "title": "学术服务",
+            "items": [
+                {
+                    "name": "IEEE VR (CCF A, Top Conference)",
+                    "years": ["2021"]
+                },
+                {
+                    "name": "International Symposium on Mixed and Augmented Reality (ISMAR), CCF B",
+                    "years": ["2024", "2025"]
+                },
+                {
+                    "name": "Computer Methods and Programs in Biomedicine (CMPB), Top Journal",
+                    "years": ["2024"]
+                },
+                {
+                    "name": "Journal of Robotic Surgery",
+                    "years": ["2025"]
+                }
+            ]
+        },
+        "en": {
+            "title": "Academic Services",
+            "items": [
+                {
+                    "name": "IEEE VR (CCF A, Top Conference)",
+                    "years": ["2021"]
+                },
+                {
+                    "name": "International Symposium on Mixed and Augmented Reality (ISMAR), CCF B",
+                    "years": ["2024", "2025"]
+                },
+                {
+                    "name": "Computer Methods and Programs in Biomedicine (CMPB), Top Journal",
+                    "years": ["2024"]
+                },
+                {
+                    "name": "Journal of Robotic Surgery",
+                    "years": ["2025"]
+                }
+            ]
+        }
+    },
+    
+    // 项目
+    "projects": {
+        "zh": {
+            "title": "项目",
+            "items": [
+                {
+                    "institution": "中国博士后科学基金会",
+                    "type": "国家资助博士后研究人员计划C档",
+                    "name": "基于线性求解器加速的实时交互仿真及在腹腔镜手术模拟中的应用",
+                    "code": "GZC20233375",
+                    "period": "2023-10至2025-07",
+                    "amount": "24万元",
+                    "status": "在研",
+                    "role": "主持"
+                },
+                {
+                    "institution": "科技部",
+                    "type": "国家重点研发计划",
+                    "name": "面向残障人群的复杂环境模拟及行为监测分析综合平台",
+                    "code": "2023YFC3604505",
+                    "period": "2023-10至2025-06",
+                    "amount": "14万元",
+                    "status": "在研",
+                    "role": "子课题负责人"
+                }
+            ]
+        },
+        "en": {
+            "title": "Projects",
+            "items": [
+                {
+                    "institution": "China Postdoctoral Science Foundation",
+                    "type": "National Postdoctoral Program for Innovative Talents (Category C)",
+                    "name": "Real-time Interactive Simulation Based on Linear Solver Acceleration and Its Application in Laparoscopic Surgery Simulation",
+                    "code": "GZC20233375",
+                    "period": "Oct 2023 - Jul 2025",
+                    "amount": "240,000 CNY",
+                    "status": "Ongoing",
+                    "role": "Principal Investigator"
+                },
+                {
+                    "institution": "Ministry of Science and Technology",
+                    "type": "National Key Research and Development Program",
+                    "name": "Comprehensive Platform for Complex Environment Simulation and Behavior Monitoring Analysis for Disabled Population",
+                    "code": "2023YFC3604505",
+                    "period": "Oct 2023 - Jun 2025",
+                    "amount": "140,000 CNY",
+                    "status": "Ongoing",
+                    "role": "Sub-project Leader"
                 }
             ]
         }

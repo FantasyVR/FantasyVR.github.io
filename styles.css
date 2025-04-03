@@ -11,6 +11,9 @@
     --emoji-about: #4CAF50;
     --emoji-news: #FF9800;
     --emoji-publications: #9C27B0;
+    --emoji-presentations: #00BCD4;
+    --emoji-services: #607D8B;
+    --emoji-projects: #009688;
     --emoji-awards: #F44336;
     --en-font: 'Times New Roman', Times, serif;
     --zh-font: '楷体', 'KaiTi', STKaiti, serif;
@@ -192,11 +195,11 @@ a {
 .content {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 1.5rem;
 }
 
 .section {
-    padding: 0 0 2rem 0;
+    padding: 0 0 1rem 0;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -209,9 +212,9 @@ a {
     align-items: center;
     gap: 0.5rem;
     color: var(--primary-color);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     font-size: 1.5rem;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.3rem;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -223,6 +226,9 @@ a {
 .emoji-about { color: var(--emoji-about); }
 .emoji-news { color: var(--emoji-news); }
 .emoji-publications { color: var(--emoji-publications); }
+.emoji-presentations { color: var(--emoji-presentations); }
+.emoji-services { color: var(--emoji-services); }
+.emoji-projects { color: var(--emoji-projects); }
 .emoji-awards { color: var(--emoji-awards); }
 
 .section-content {
@@ -231,19 +237,29 @@ a {
 }
 
 /* 列表样式 */
-.news-list, .publications-list, .awards-list {
+.news-list, .publications-list, .awards-list, .presentations-list, .services-list, .projects-list {
     list-style: none;
 }
 
-.news-list li, .awards-list li {
+.news-list li, .awards-list li, .services-list li {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.6rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-.news-list li:last-child, .awards-list li:last-child {
+.presentations-list li {
+    display: block;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border-color);
+    white-space: normal;
+    overflow: visible;
+    word-wrap: break-word;
+}
+
+.news-list li:last-child, .awards-list li:last-child, .presentations-list li:last-child, .services-list li:last-child {
     border-bottom: none;
 }
 
@@ -256,9 +272,9 @@ a {
 /* 出版物样式 */
 .publication-item {
     display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
+    gap: 1.2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -297,11 +313,15 @@ a {
     color: var(--primary-color);
     font-size: 1.1rem;
     display: inline;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .publication-authors {
     display: inline;
     margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .publication-authors a {
@@ -322,6 +342,13 @@ a {
     font-style: italic;
     display: inline;
     margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.publication-note {
+    color: var(--accent-color);
+    font-weight: 600;
 }
 
 .publication-links {
@@ -462,4 +489,79 @@ html[lang="zh"] #about .section-content a {
 
 html[lang="en"] #about .section-content a {
     font-family: var(--en-font);
+}
+
+/* 报告样式 */
+.presentation-venue {
+    font-weight: 600;
+    color: var(--primary-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.presentation-title {
+    font-style: italic;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* 学术服务样式 */
+.service-name {
+    color: var(--primary-color);
+    font-family: var(--en-font);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.service-years {
+    color: var(--secondary-color);
+    margin-left: 8px;
+    font-family: var(--en-font);
+}
+
+.services-list li {
+    flex-wrap: wrap;
+}
+
+/* 确保学术服务部分的标题继承页面的主字体 */
+#services .section-title {
+    font-family: inherit;
+}
+
+/* 项目样式 */
+.project-item {
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.project-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.project-institution, .project-type, .project-name, .project-code, .project-period, .project-amount, .project-status, .project-role {
+    display: inline;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.project-institution {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.project-name {
+    font-style: italic;
+}
+
+.project-code {
+    color: var(--secondary-color);
+}
+
+.project-role {
+    font-weight: 600;
 } 
