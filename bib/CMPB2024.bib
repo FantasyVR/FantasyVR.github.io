@@ -1,0 +1,20 @@
+@article{YU2024108171,
+title = {Real-time soft body dissection simulation with parallelized graph-based shape matching on GPU},
+journal = {Computer Methods and Programs in Biomedicine},
+volume = {250},
+pages = {108171},
+year = {2024},
+issn = {0169-2607},
+doi = {https://doi.org/10.1016/j.cmpb.2024.108171},
+url = {https://www.sciencedirect.com/science/article/pii/S0169260724001676},
+author = {Peng Yu and Zhiyuan Zhao and Ruiqi Wang and Junjun Pan},
+keywords = {K.6.1 [computer graphics], Virtual surgery simulation},
+abstract = {Background and Objective
+Interactive soft tissue dissection has been a fundamental procedure in virtual surgery systems. Existing cutting algorithms involve complex topology changes of simulation meshes, which can increase simulation overhead and produce visual artifacts. In this paper, we proposed a novel graph-based shape-matching method that allows for real-time, flexible, progressive, and discontinuous cuts on soft tissue.
+Methods
+We employed shape-matching constraints within the position-based dynamics (PBD) framework, a widely adopted approach for real-time simulation applications. The soft tissue was effectively modeled using overlapping clusters, each governed by shape-matching constraints. The dissection process was bifurcated into two distinct stages. In the first stage, the surgical scalpel presses the surface of the soft tissue. The soft tissue is cut apart when the surface pressure exceeds a threshold, entering the second stage. To address the discrepancy between the visual mesh and the simulation model during cluster separation, we developed an Aggregate Finding Connected Components (AFCC) algorithm, optimized for GPU computation and integrated with a background grid. This approach also avoids ghost forces and fragmentation artifacts. To control the increase in the number of clusters, we also propose a merging strategy that can run in parallel.
+Results
+Our simulation outcomes demonstrated that the AFCC dissection algorithm effectively manages cluster separation and expansion with robustness. There were no ghost forces between the cutting surface and unrealistic fragments. Our simulation capability extended to supporting intricate and discontinuous cutting routes. Our dissection simulation maintained real-time performance even with over 100,000 particles constituting the soft tissue.
+Conclusions
+Our real-time and robust surgical dissection simulation technique enables the performance of complex cuts in various surgical scenarios, demonstrating its potential in virtual surgery applications.}
+}

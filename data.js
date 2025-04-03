@@ -93,8 +93,8 @@ const websiteData = {
             {
                 "title": "Immersive Virtual Sculpting Experience with Elastoplastic Clay Simulation and Real-Time Haptic Feedback",
                 "authors": [
-                    {"name": "Yang Gao", "url": "https://gaoyangvr.github.io/", "cofirst": true},
-                    {"name": "Zhiyang Ji", "cofirst": true},
+                    {"name": "Yang Gao", "url": "https://gaoyangvr.github.io/"},
+                    {"name": "Zhiyang Ji"},
                     {"name": "Peng Yu", "corresponding": true, "bold": true},
                     {"name": "Aimin Hao"}
                 ],
@@ -103,8 +103,7 @@ const websiteData = {
                 "links": {
                     "pdf": "PDF/ismar2024.pdf",
                     "video": "Video/ismar2024.mp4",
-                    "bibtex": "bib/ismar2024.bib",
-                    "slides": "PPT/ismar2024.pdf"
+                    "bibtex": "bib/ismar2024.bib"
                 }
             },
             {
@@ -123,6 +122,95 @@ const websiteData = {
                     "pdf": "PDF/tvc2024.pdf",
                     "video": "Video/tvc2024.mp4",
                     "bibtex": "bib/tvc2024.bib"
+                }
+            },
+            {
+                "title": "Real-time soft body dissection simulation with parallelized graph-based shape matching on GPU",
+                "authors": [
+                    {"name": "Peng Yu", "bold": true},
+                    {"name": "Zhiyuan Zhao"},
+                    {"name": "Ruiqi Wang"},
+                    {"name": "Junjun Pan", "corresponding": true},
+                ],
+                "venue": "Computer Methods and Programs in Biomedicine, 2024",
+                "thumbnail": "images/CMPB2024.png",
+                "links": {
+                    "pdf": "PDF/CMPB024.pdf",
+                    "video": "Video/CMPB024.mp4",
+                    "bibtex": "bib/CMPB024.bib"
+                }
+            },
+            {
+                "title": "Quantitative influence and performance analysis of virtual reality laparoscopic surgical training system",
+                "authors": [
+                    {"name": "Peng Yu", "bold": true},
+                    {"name": "Junjun Pan", "corresponding": true},
+                    {"name": "Zhaoxue Wang"},
+                    {"name": "Yang Shen"},
+                    {"name": "Lili Wang"},
+                    {"name": "Jialun Li"},
+                    {"name": "Aimin Hao"},
+                    {"name": "Haipeng Wang"},
+                ],
+                "venue": "BMC Medical Education, 2022",
+                "thumbnail": "images/bmc2022.png",
+                "links": {
+                    "pdf": "PDF/BMC_2022.pdf",
+                    "bibtex": "bib/bmc2022.bib"
+                }
+            },
+            {
+                "title": "Cognitive Load/flow and Performance in Virtual Reality Simulation Training of Laparoscopic Surgery",
+                "authors": [
+                    {"name": "Peng Yu", "bold": true},
+                    {"name": "Junjun Pan", "corresponding": true},
+                    {"name": "Zhaoxue Wang"},
+                    {"name": "Yang Shen"},
+                    {"name": "Lili Wang"},
+                    {"name": "Jialun Li"},
+                    {"name": "Aimin Hao"},
+                    {"name": "Haipeng Wang"},
+                ],
+                "venue": "2021 IEEE Conference on Virtual Reality and 3D User Interfaces Abstracts and Workshops (VRW)",
+                "thumbnail": "images/IEEEVR2021.jpg",
+                "links": {
+                    "pdf": "PDF/IEEEVR2021.pdf",
+                    "bibtex": "bib/IEEEVR2021.bib"
+                }
+            },
+            {
+                "title": "Real-time suturing simulation for virtual reality medical training",
+                "authors": [
+                    {"name": "Peng Yu", "bold": true},
+                    {"name": "Junjun Pan", "corresponding": true},
+                    {"name": "Hong Qin", "corresponding": true},
+                    {"name": "Aimin Hao"},
+                    {"name": "Haipeng Wang"},
+                ],
+                "venue": "Computer Animation and Virtual Worlds, 2020",
+                "thumbnail": "images/CAVW2020.jpg",
+                "links": {
+                    "pdf": "PDF/CAVW2020.pdf",
+                    "bibtex": "bib/CAVW2020.bib"
+                }
+            },
+            {
+                "title": "Real-time VR Simulation of Laparoscopic Cholecystectomy based on Parallel Position-based Dynamics in GPU",
+                "authors": [
+                    {"name": "Junjun Pan", "cofirst":true, "corresponding": true},
+                    {"name": "Leiyu Zhang", "cofirst": true},
+                    {"name": "Peng Yu", "cofirst":true, "bold": true},
+                    {"name": "Yang Shen"},
+                    {"name": "Haipeng Wang"},
+                    {"name": "Aimin Hao"},
+                    {"name": "Hong Qin"},
+                ],
+                "venue": "IEEE Conference on Virtual Reality and 3D User Interfaces (IEEE VR), 2020",
+                "thumbnail": "images/IEEEVR2020.png",
+                "links": {
+                    "pdf": "PDF/IEEEVR2020.pdf",
+                    "bibtex": "bib/IEEEVR2020.bib",
+                    "slides": "PPT/IEEEVR2020.pptx"
                 }
             }
         ]
