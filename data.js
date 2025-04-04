@@ -237,6 +237,10 @@ const websiteData = {
                 {
                     "date": "2024",
                     "content": "教育部重点领域虚拟教研室典型教研成果(排名：2/5)"
+                },
+                {
+                    "date": "2024",
+                    "content": "北京航空航天大学2024年计算机学院科研贡献奖"
                 }
             ]
         },
@@ -250,6 +254,10 @@ const websiteData = {
                 {
                     "date": "2024",
                     "content": "Exemplary Teaching & Research Achievement (Key Virtual Teaching & Research Office, MoE Priority Areas) (Rank: 2/5)"
+                },
+                {
+                    "date": "2024",
+                    "content": "2024 Research Contribution Award of School of Computer Science and Engineering (SCSE), Beihang University"
                 }
             ]
         }
@@ -349,6 +357,36 @@ const websiteData = {
                     "amount": "14万元",
                     "status": "在研",
                     "role": "子课题负责人"
+                },
+                {
+                    "institution": "国家自然科学基金委员会",
+                    "type": "面上项目",
+                    "name": "基于增强现实的腹腔镜结肠癌手术精准导航技术及验证",
+                    "code": "62172437",
+                    "period": "2022-01至2025-12",
+                    "amount": "61万元",
+                    "status": "在研",
+                    "role": "骨干成员"
+                },
+                {
+                    "institution": "国家自然科学基金委员会",
+                    "type": "面上项目",
+                    "name": "基于元球和无网格模型混合方法的可交互软组织建模及其在神经外科手术模拟中的应用",
+                    "code": "61872020",
+                    "period": "2019-01至2022-12",
+                    "amount": "65万元",
+                    "status": "结题",
+                    "role": "骨干成员"
+                },
+                {
+                    "institution": "北京市自然科学基金",
+                    "type": "海淀原始创新联合基金重点项目",
+                    "name": "体数据实时变形交互操作及其在肺癌手术仿真的应用",
+                    "code": "L182016",
+                    "period": "2019-01至2021-12",
+                    "amount": "98万元",
+                    "status": "结题",
+                    "role": "参与"
                 }
             ]
         },
@@ -382,10 +420,10 @@ const websiteData = {
     // 页脚
     "footer": {
         "zh": {
-            "copyright": "© 2024 禹鹏. All rights reserved."
+            "copyright": "© 2025 禹鹏. All rights reserved."
         },
         "en": {
-            "copyright": "© 2024 Peng Yu. All rights reserved."
+            "copyright": "© 2025 Peng Yu. All rights reserved."
         }
     }
 }; 
