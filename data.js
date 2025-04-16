@@ -143,8 +143,8 @@ const websiteData = {
                 "thumbnail": "images/CMPB2024.png",
                 "links": {
                     "pdf": "PDF/CMPB024.pdf",
-                    "video": "Video/CMPB024.mp4",
-                    "bibtex": "bib/CMPB024.bib"
+                    "video": "Video/CMPB2024.mp4",
+                    "bibtex": "bib/CMPB2024.bib"
                 }
             },
             {
