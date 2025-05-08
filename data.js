@@ -97,6 +97,43 @@ const websiteData = {
         },
         "items": [
             {
+                "title": "MGPBD: A Multigrid Accelerated Global XPBD Solver",
+                "authors": [
+                    {"name": "Chunlei Li","cofirst":true, },
+                    {"name": "Peng Yu", "cofirst":true, "bold": true},
+                    {"name": "Tiantian Liu"},
+                    {"name": "Siyuan Yu"},
+                    {"name": "Yuting Xiao"},
+                    {"name": "Shuai Li","corresponding": true,},
+                    {"name": "Aimin Hao"},
+                    {"name": "Yang Gao",  "url": "https://gaoyangvr.github.io/","corresponding": true},
+                    {"name": "Qinping Zhao"}
+                ],
+                "venue": "Siggraph Conference, 2025",
+                "thumbnail": "images/siggraph2025.jpeg",
+                "links": {
+                    "pdf": "PDF/siggraph2025.pdf",
+                    "video": "Video/siggraph2025.mp4",
+                    "bibtex": "bib/siggraph2025.bib"
+                }
+            },
+            {
+                "title": "Real-Time Immersive Haptic Sculpting with Elastoplastic Virtual Clay",
+                "authors": [
+                    {"name": "Peng Yu", "bold": true},
+                    {"name": "Zhiyang Ji"},
+                    {"name": "Yang Gao",  "url": "https://gaoyangvr.github.io/","corresponding": true},
+                    {"name": "Aimin Hao"}
+                ],
+                "venue": "The Visual Computer, 2025",
+                "thumbnail": "images/tvc2025.png",
+                "links": {
+                    "pdf": "PDF/tvc2025.pdf",
+                    "video": "Video/tvc2025.mp4",
+                    "bibtex": "bib/tvc2025.bib"
+                }
+            },
+            {
                 "title": "Immersive Virtual Sculpting Experience with Elastoplastic Clay Simulation and Real-Time Haptic Feedback",
                 "authors": [
                     {"name": "Yang Gao", "url": "https://gaoyangvr.github.io/"},
