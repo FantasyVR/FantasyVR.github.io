@@ -179,7 +179,7 @@ const websiteData = {
                 "venue": "Computer Methods and Programs in Biomedicine, 2024",
                 "thumbnail": "images/CMPB2024.png",
                 "links": {
-                    "pdf": "PDF/CMPB024.pdf",
+                    "pdf": "PDF/CMPB2024.pdf",
                     "video": "Video/CMPB2024.mp4",
                     "bibtex": "bib/CMPB2024.bib"
                 }
